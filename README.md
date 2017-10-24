@@ -1,4 +1,4 @@
-# IndefinateMachineLearning
+# Toolbox Design for Indefinite Kernel Learning
 
 ---
 Design of toolbox for indefinate kernel machine learning
