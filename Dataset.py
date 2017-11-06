@@ -45,7 +45,9 @@ class Dataset:
         self.bool_supervised = None
         
         #self.data = numpy.array
-        self.data = None
+        self.dataX = None
+        self.dataY = None
+        
         
 
     def split(self):
@@ -54,8 +56,18 @@ class Dataset:
     def getSize(self):
         pass
     
-    def load(self):
-        pass
+    '''
+    parameters:
+        x_train numpy.array (number of set * number of features)
+        y_train numpy.array (number of set * 1)
+    '''
+    def load(self,x_train,y_train):
+        self.dataX = x_train
+        self.dataY = y_train
+        self.dimension_x = x_train.shape[1]
+        self.number_of_examples = x_train.shape[0]
+        
+        
     
     #def generate_batch(self):
         

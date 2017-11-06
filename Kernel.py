@@ -9,7 +9,7 @@ class Kernel():
     def __init__(self,kernel_type,parameters):
         pass
     
-    def calculate(x1,x2):
+    def compute(x1,x2):
         pass
     
     

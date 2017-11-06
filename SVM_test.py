@@ -8,9 +8,9 @@ import Algorithms
 
 
 svm = Algorithms.SVM()
-    
+
 svm.Data.load()
-    
+
 svm.Data.set_up_for_SVM()
     
 svm.train()
