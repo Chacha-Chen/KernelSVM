@@ -37,6 +37,12 @@ class Batch:
         pass
 '''
 
+
+import numpy
+
+'''
+Class Dataset to save information and operations about data.
+'''
 class Dataset:
     def __init__(self):
         self.number_of_examples = None
@@ -62,9 +68,13 @@ class Dataset:
         y_train numpy.array (number of set * 1)
     '''
     def load(self,x_train,y_train):
+
+        #check the dataset
+        
         self.dataX = x_train
         self.dataY = y_train
         self.dimension_x = x_train.shape[1]
+        self.dimension_y = y_train.shape[1]
         self.number_of_examples = x_train.shape[0]
         
         
@@ -80,7 +90,7 @@ class Dataset:
     #为SVM准备数据 并做检查
     def set_up_for_SVM(self):
         pass
-    
-    
-    
-    
+
+class Normalization():
+    def __init__(self):
+          self.matrix = None

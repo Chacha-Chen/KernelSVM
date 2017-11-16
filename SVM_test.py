@@ -11,10 +11,10 @@ svm = Algorithms.SVM()
 
 svm.Data.load()
 
-svm.Data.set_up_for_SVM()
+#svm.Data.set_up_for_SVM()
     
 svm.train()
-    
+
 svm.evaluate()
     
 svm.predict()
