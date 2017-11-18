@@ -11,8 +11,9 @@ svm = Algorithms.SVM()
 
 svm.Data.load()
 
-svm.Data.set_up_for_SVM()
+#svm.Data.set_up_for_SVM()
     
+
 svm.clf(c=1,kernal='')
 
 svm.cross_validation(clf,)
@@ -25,6 +26,9 @@ svm.train(c=0.01,kernal='')
 
 svm.cross_validation()
 
+
+
+svm.train()
 
 svm.evaluate()
 

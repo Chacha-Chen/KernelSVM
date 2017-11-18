@@ -121,7 +121,18 @@ class SVM(Classification):
     def _predict(self,x_predict):
         pass
     
-    def train(self,x_train,y_train,C,kernalName,eps):
+    '''
+    Using cross_validation
+    User can set some of the parameter.
+    '''
+    def train(self,x_train,y_train,C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0]):
+        pass
+
+    
+    '''
+    Single training process Using SMO
+    '''
+    def _train(self,x_train,y_train,C,kernalName,eps):
         self.C = C
         self.eps = eps
         
