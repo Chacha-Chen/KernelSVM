@@ -37,6 +37,9 @@ Module for a variety of kernels
 
 Module for a variety of models, e.g.  linear model  
 
+- SMO:
+
+Module of SMO algorithms
 
 
 ### 项目进展    

@@ -13,9 +13,21 @@ svm.Data.load()
 
 svm.Data.set_up_for_SVM()
     
-svm.train()
-    
+svm.clf(c=1,kernal='')
+
+svm.cross_validation(clf,)
+
+svm.clf(c=0.1,kernal='')
+
+svm.cross_validation( )
+
+svm.train(c=0.01,kernal='')
+
+svm.cross_validation()
+
+
 svm.evaluate()
+
     
 svm.predict()
     
