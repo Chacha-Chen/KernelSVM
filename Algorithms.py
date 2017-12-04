@@ -18,10 +18,14 @@ Created on Thu Oct 19 11:10:40 2017
 """
 
 
-#import  Model
-import Dataset
-import Kernel
-import numpy
+
+import SMO
+
+
+def _evaulate(w,b,X_test,Y_test):
+    pass
+
+
 
 '''
 监督学习类
@@ -113,7 +117,6 @@ class SVM():
         self.b = None
         self.w = None
         
-        
         #self.target = numpy.zeros((self.Data.number_of_examples))
     
     
@@ -123,7 +126,38 @@ class SVM():
     '''
     def train(self,X,Y,C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0],kernal='rbf',tol=1e-3):
         #Cross Validation
-        pass
+        '''
+        里面调用SMO
+        
+        '''
+        #X   X_0 X_1.....
+        # 生成10份
+        
+        acc_best = 0
+        C_best = None
+        gamma_best = None
+        for CVal in C:
+            for gammaVal in gamma:
+                for i in range(10):
+                    X_test = X[i]
+                    Y_test = Y[i]
+                    
+                    X_train = None
+                    Y_train = None
+                    
+                    (w,b) = SMO.SMO(X_train,Y_train,CVal,gammaVal,kernal,tol=1e-3)
+                    
+                    acc = _evaulate(w,b,X_test,Y_test)
+                    
+                    if acc > acc_best:
+                        acc_best = acc
+                        #更新C gamma
+        
+        (w,b) = SMO(X_train,Y_train,C_best,gamma_best,kernal,tol=1e-3)
+        self.w = w
+        self.b = b
+        
+        return None
     
     def predict(self,X):
         #Return Y
@@ -133,12 +167,11 @@ class SVM():
         return 
     
     
-    def _evaluate(self,w,b,X,Y):
-        pass
+
     
-    '''
+'''
     Single training process Using SMO
-    '''
+    
     def _train(self,x_train,y_train,C,kernalName,eps):
         self.C = C
         self.eps = eps
@@ -242,9 +275,9 @@ class SVM():
         - 0.5 * k22 * a2 * a2 - s * k12 * (gamma - s * a2) * a2
         - y1 * (gamma - s * a2) * v1 - y2 * a2 * v2
         return W
-    
+ 
     
     
 if __name__=="__main__":
     svm = SVM()
-    
+'''       

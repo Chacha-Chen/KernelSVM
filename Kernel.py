@@ -5,15 +5,11 @@ Maybe not used for now.
 @author: Dyt
 """
 
-'''
+import numpy
 
-'''
-
-class Kernel():
-    def __init__(self,kernel_type,parameters):
-        pass
-    
-    def compute(x1,x2):
-        pass
-
-
+def kernel(x1,x2,k_type):
+    #x1,x2 numpy.array
+    if k_type == 'rbf':
+        
+        K = numpy.dot(x1,x2)
+    return K

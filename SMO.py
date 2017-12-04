@@ -12,6 +12,13 @@ SMO算法模块
 @author: Chacha
 """
 
+def SMO(X_train,Y_train,CVal,gammaVal,kernal,tol=1e-3):
+    
+    w = None
+    b = None
+    return (w,b)
+
+'''
 class SVM(Classification):
     def __init__(self):
         Classification.__init__(self)
@@ -130,5 +137,5 @@ class SVM(Classification):
         - 0.5 * k22 * a2 * a2 - s * k12 * (gamma - s * a2) * a2
         - y1 * (gamma - s * a2) * v1 - y2 * a2 * v2
         return W
-    
+'''
     
