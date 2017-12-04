@@ -5,30 +5,26 @@ Created on Sun Oct 22 10:23:45 2017
 @author: Dyt
 """
 import Algorithms
+import numpy
 
+X = numpy.array([[1,3,3],[1,2,3]])
+
+Y = numpy.array([[1],[2]])
 
 svm = Algorithms.SVM()
 
-svm.Data.load()
+svm.Data.load(X,Y)
 
 #svm.Data.set_up_for_SVM()
     
 
-svm.clf(c=1,kernal='')
-
-svm.cross_validation(clf,)
-
-svm.clf(c=0.1,kernal='')
-
-svm.cross_validation( )
-
-svm.train(c=0.01,kernal='')
-
-svm.cross_validation()
+svm.clf()
 
 
 
-svm.train()
+svm.train(c=0.01,kernal='rbf')
+
+
 
 svm.evaluate()
 

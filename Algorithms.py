@@ -18,7 +18,7 @@ Created on Thu Oct 19 11:10:40 2017
 """
 
 
-import  Model
+#import  Model
 import Dataset
 import Kernel
 import numpy
@@ -99,6 +99,7 @@ class Regression(SupervisedLearning):
     
 class Classification(SupervisedLearning):
     def __init__(self):
+        SupervisedLearning.__init__(self)
         pass
     
 
