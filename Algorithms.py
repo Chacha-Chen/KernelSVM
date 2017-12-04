@@ -27,10 +27,10 @@ import numpy
 监督学习类
 有基本的功能
 设想是各种算法都可以从这里继承，这里的代码可以重用
-'''
+
 class SupervisedLearning:
     
-    '''
+    
     初始化
     所有的监督学习均有数据集
     因此该父类拥有Dateset作为成员变量 并拥有
@@ -40,46 +40,45 @@ class SupervisedLearning:
     LearningMachine=SupervisedLearning()
     LearningMachine.Data.load()
     等方式进行使用
-    '''
+    
     def __init__(self):
-        '''
+        
         该类内部不需再写关于dataset处理的内容
         可以在外部直接调用Dataset的成员函数
-        '''
+        
         self.Data=Dataset.Dataset()
         self.Data.bool_supervised = True
         self.Data.dimension_y = 1
         pass
     
     
-    '''
+    
     训练核心算法
     可以内部调用也可以外部调用
-    '''
+    
     def train(self,x_trains,y_trains,parameters):
         pass
     
     
-    '''
     训练完毕后，给定一组x，输出相应的结果
-    '''
+    
     def predict(self,x_predict):
         pass
     
     
-    '''
+    
     结果评估
     给定一组测试集，输出准确率等信息
     需要利用predict
-    '''
+    
     def evaluate(self,x_test,y_test):
         pass
     
     
-    '''
+    
     交叉检验
     包含 对数据集的分割  需要利用train 和 evaluate
-    '''
+    
     def cross_validation(self,x_train,y_train):
         pass
     
@@ -103,32 +102,39 @@ class Classification(SupervisedLearning):
         pass
     
 
-'''
+
 从基类继承 可以继承evaluate等相同功能的函数
 SVM特有的（如训练算法）在这里重载
 '''
-class SVM(Classification):
+class SVM():
     def __init__(self):
-        Classification.__init__(self)
         
+        #self.Data=Dataset.Dataset()
+        self.b = None
+        self.w = None
         
-        #SVM parameters
-        self.input_size = None
-        
-        self.error_cache = numpy.zeros((self.Data.number_of_examples, 1))
-        self.error_cache = self.error_cache + numpy.nan
         
         #self.target = numpy.zeros((self.Data.number_of_examples))
-    def _predict(self,x_predict):
-        pass
+    
     
     '''
     Using cross_validation
     User can set some of the parameter.
     '''
-    def train(self,x_train,y_train,C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0]):
+    def train(self,X,Y,C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0],kernal='rbf',tol=1e-3):
+        #Cross Validation
         pass
-
+    
+    def predict(self,X):
+        #Return Y
+        pass
+    
+    def evaluate(self,X,Y):
+        return 
+    
+    
+    def _evaluate(self,w,b,X,Y):
+        pass
     
     '''
     Single training process Using SMO

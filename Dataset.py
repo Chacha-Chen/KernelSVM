@@ -82,8 +82,6 @@ class Dataset:
 
 class Normalization():
     def __init__(self):
-          self.forwardTransform = None
-          self.invertTransform = None
           self.maxVector = None
           self.minVector = None
     '''
@@ -111,23 +109,21 @@ class Normalization():
         
         #scaleMatrix = numpy.tile(scaleVector,(input_data.shape[0],1))
 
-        normalizedData = numpy.true_divide(input_data-minMatrix, maxMatrix-minMatrix)
+        #normalizedData = numpy.true_divide(input_data-minMatrix, maxMatrix-minMatrix)
 
         #Generate a function to calculate forwardTransform and invertTransform
         
-        def fT(data):
+    def fT(self,input_data):
             
             
-            minMatrix = numpy.tile(self.minVector,(input_data.shape[0],1))
-            maxMatrix = numpy.tile(self.maxVector,(input_data.shape[0],1))
+        minMatrix = numpy.tile(self.minVector,(input_data.shape[0],1))
+        maxMatrix = numpy.tile(self.maxVector,(input_data.shape[0],1))
             
-            normalizedData = numpy.true_divide(input_data-minMatrix, maxMatrix-minMatrix)
+        normalizedData = numpy.true_divide(input_data-minMatrix, maxMatrix-minMatrix)
             
-            return normalizedData
+        return normalizedData
             
             
 
-        return fT
-        
         
         

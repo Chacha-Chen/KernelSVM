@@ -23,22 +23,23 @@ NorX.fit(X)
 NorY = Dataset.Normalization()
 NorY.fit(Y)
 
-X_N = NorX.forwardTransform()
+X_N = NorX.fT(X)
 
-Y_N = NorY.forwardTransform()
+Y_N = NorY.fT(Y)
+
 
 svm = Algorithms.SVM()
 
-svm.Data.load(X_N,Y_N)
+
 
 #svm.Data.set_up_for_SVM()
     
 
-svm.clf()
 
 
 
-svm.train(c=0.01,kernal='rbf')
+
+svm.train(X,Y,c=0.01,gamma=0.01,kernal='rbf')
 
 
 
