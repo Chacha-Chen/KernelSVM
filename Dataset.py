@@ -31,7 +31,7 @@ import numpy
 
 '''
 Class Dataset to save information and operations about data.
-'''
+
 class Dataset:
     def __init__(self):
         self.number_of_examples = None
@@ -51,11 +51,11 @@ class Dataset:
     def getSize(self):
         pass
     
-    '''
+    
     parameters:
         x_train numpy.array (number of set * number of features)
         y_train numpy.array (number of set * 1)
-    '''
+    
     def load(self,x_train,y_train):
 
         #check the dataset
@@ -70,15 +70,16 @@ class Dataset:
     
     #def generate_batch(self):
         
-    '''
-    只归一化x的维度
-    '''
+    
+    #只归一化x的维度
+    
     def normalization(self):
         pass
     
     #为SVM准备数据 并做检查
     def set_up_for_SVM(self):
         pass
+'''
 
 class Normalization():
     def __init__(self):
@@ -89,8 +90,8 @@ class Normalization():
     '''
     def fit(self,input_data):
         #check input_data type
-        if type(input_data) != numpy.array:
-            print("ERROR:input_data is not a numpy.array!")
+        #if type(input_data) != numpy.array:
+        #    print("ERROR:input_data is not a numpy.array!")
         
 
         #Use maxinum and minum to normalize
@@ -116,14 +117,34 @@ class Normalization():
     def fT(self,input_data):
             
             
-        minMatrix = numpy.tile(self.minVector,(input_data.shape[0],1))
-        maxMatrix = numpy.tile(self.maxVector,(input_data.shape[0],1))
-            
-        normalizedData = numpy.true_divide(input_data-minMatrix, maxMatrix-minMatrix)
+        #minMatrix = numpy.tile(self.minVector,(input_data.shape[0],1))
+        #maxMatrix = numpy.tile(self.maxVector,(input_data.shape[0],1))
+        
+        up = input_data-self.minVector
+        down = (self.maxVector - self.minVector)
+        normalizedData = up / down
+        #normalizedData = (input_data-self.minVector[None,:])/(self.maxVector - self.minVector)[None,:]
             
         return normalizedData
             
-            
+if __name__== '__main__':
+    
+    X = numpy.array([[2.0,3.0,3.0],[1.5,2.0,8.0]])
 
-        
-        
+    Y = numpy.array([[1.0],[2]])
+    
+    NorX = Normalization()
+    
+    
+    NorX.fit(X)
+    
+    
+    NorY = Normalization()
+    NorY.fit(Y)
+    
+    X_N = NorX.fT(X)
+    
+    Y_N = NorY.fT(Y)
+    
+            
+            
