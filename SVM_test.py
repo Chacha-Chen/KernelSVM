@@ -39,7 +39,7 @@ svm = Algorithms.SVM()
 
 
 
-svm.train(X,Y,c=0.01,gamma=0.01,kernal='rbf')
+svm.train(X_N,Y_N,c=0.01,gamma=0.01,kernal='rbf')
 
 
 

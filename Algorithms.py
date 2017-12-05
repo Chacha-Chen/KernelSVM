@@ -20,7 +20,7 @@ Created on Thu Oct 19 11:10:40 2017
 
 
 import SMO
-
+import numpy
 
 def _evaulate(w,b,X_test,Y_test):
     pass
@@ -161,7 +161,9 @@ class SVM():
     
     def predict(self,X):
         #Return Y
-        pass
+        Y = numpy.dot(X,self.w) - self.b
+        return Y
+        #Y  numpy.array([1,2,3])
     
     def evaluate(self,X,Y):
         return 
