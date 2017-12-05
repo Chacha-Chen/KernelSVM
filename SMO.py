@@ -15,20 +15,17 @@ import numpy as np
 
 
 # Objective function to optimize 优化目标函数
+# 总感觉有问题 需要处理一下
 def objective_function(alphas, target, kernel, X_train):
-    """Returns the SVM objective function based in the input model defined by:
-    `alphas`: vector of Lagrange multipliers
-    `target`: vector of class labels (-1 or 1) for training data
-    `kernel`: kernel function
-    `X_train`: training data for model."""
+    """Returns the SVM objective function"""
 
     return np.sum(alphas) - 0.5 * np.sum(target * target * kernel(X_train, X_train) * alphas * alphas)
 
 # Decision function 分类函数
-def decision_function(alphas, target, kernel, X_train, x_test, b):
-    """input `x_test`."""
+def decision_function(alphas, target, kernel, X_train, X_test, b):
+    """input `x_test` return y."""
 
-    result = (alphas * target) @ kernel(X_train, x_test) - b
+    result = np.dot((alphas * target) , kernel(X_train, X_test)) - b
     return result
 
 class SMO_Model:
@@ -91,6 +88,7 @@ def take_step(i1, i2, model):
     else:
         alphas_adj = model.alphas.copy()
         alphas_adj[i2] = L
+
         # objective function output with a2 = L
         Lobj = objective_function(alphas_adj, model.y, model.kernel, model.X)
         alphas_adj[i2] = H
@@ -150,6 +148,7 @@ def take_step(i1, i2, model):
     model.b = b_new
 
     return 1, model
+
 
 def examine_example(i2, model):
     y2 = model.y[i2]
