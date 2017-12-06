@@ -126,11 +126,11 @@ class SVM():
     def __init__(self, x_train, y_train, kernel):
 
         self.X = x_train  # training data，m*n
-        self.y = y_train  # class label vector，1*m
+        self.Y = y_train  # class label vector，1*m
         self.kernel = kernel  # kernel function: rbf OR linear OR...
         self.alphas = numpy.zeros(len(self.X))  # lagrange multiplier vector, initialized as zeros
         self.b = None  # scalar bias term
-
+        self.gamma = 1
 
 
     '''
@@ -150,8 +150,22 @@ class SVM():
 
 
     def train(self,C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0],kernel='rbf',tol=1e-3):
-        A = []
-        B = []
+        A = [0] * 10
+        B = [0] * 10
+        
+        indices = numpy.random.permutation(self.X.shape[0]) # shape[0]表示第0轴的长度，通常是训练数据的数量  
+        rand_data_x = self.X[indices]  
+        rand_data_y = self.Y[indices] # data_y就是标记（label）  
+        
+        l = int(len(indices) / 10) 
+        
+        for i in range(9):
+            A[i] = rand_data_x[i*l:i*l+l]
+            B[i] = rand_data_y[i*l:i*l+l]
+        
+        A[9] = rand_data_x[9*l:]
+        B[9] = rand_data_y[9*l:]
+        '''
         X_num=self.X.shape[0]
         train_index=range(X_num)
         test_size=int(X_num*0.1)+1
@@ -161,12 +175,12 @@ class SVM():
                 randomIndex=int(numpy.random.uniform(0,len(train_index)))
                 test_index.append(train_index[randomIndex])
                 #del train_index[randomIndex]
-            A[i]=self.X.ix[test_index]
-            B[i]=self.Y.ix[test_index]
-        A[9]=self.X.ix[train_index]
-        B[9]=self.Y.ix[train_index]		
-				
-
+            A[i]=self.X[test_index,:]
+            B[i]=self.Y[test_index,:]
+        A[9]=self.X.ix_[train_index]
+        B[9]=self.Y.ix_[train_index]
+        '''
+        
         acc_best = 0
         C_best = None
         gamma_best = None
@@ -189,12 +203,12 @@ class SVM():
                     X_train = numpy.concatenate([A[(i+1)%10],A[(i+2)%10],A[(i+3)%10],A[(i+4)%10],A[(i+5)%10],A[(i+6)%10],A[(i+7)%10],A[(i+8)%10],A[(i+9)%10]], axis=0)
                     Y_train = numpy.concatenate([B[(i+1)%10],B[(i+2)%10],B[(i+3)%10],B[(i+4)%10],B[(i+5)%10],B[(i+6)%10],B[(i+7)%10],B[(i+8)%10],B[(i+9)%10]], axis=0)
                     
-
+                    SMO.GG = gammaVal
                     model= SMO.SMO_Model(X_train, Y_train, CVal,  self.kernel,gammaVal, tol=1e-3, eps=1e-3)
 
                     output_model=SMO.SMO(model)
                     
-                    acc = SMO._evaulate(output_model,X_test,Y_test)
+                    acc = SMO._evaluate(output_model,X_test,Y_test)
 
                     
                     if acc > acc_best:
@@ -202,13 +216,15 @@ class SVM():
                         #更新C gamma
                         C_best = C
                         gamma_best =gamma
+                        self.gamma = gamma_best
 
 
         #最后一遍train
+        SMO.GG = gamma_best
         SVM_model = SMO.SMO(SMO.SMO_Model(X_train, Y_train, C_best, self.kernel, gamma_best, tol=1e-3, eps=1e-3))
         # 参数传递给最后生成的SVM类
         self.X = SVM_model.X
-        self.y = SVM_model.y
+        self.Y = SVM_model.y
         self.kernel = SVM_model.kernel
         self.alphas = SVM_model.alphas
         self.b = SVM_model.b
@@ -225,20 +241,13 @@ class SVM():
 		
     
 
-    def predict(self,X):
-        #Return Y
-        Y = numpy.dot(X,self.w) - self.b
+
+
+    def evaluate(self,X_test,Y):
         
-        Y[Y >= 0] = 1
-        Y[Y < 0] = -1
-        
-        return Y
-        #Y  numpy.array([1,2,3])  这行注释我也看不懂写的是啥。。。
-    
-    def evaluate(self,X,Y):
-        
-        Y_predict = self.predict(X)
-        
+        Y_predict = numpy.zeros(X_test.shape[0])
+        for i in range(X_test.shape[0]):
+            Y_predict[i] = SMO.decision_function(self.alphas, self.Y, self.kernel, self.X, X_test[i], self.b,self.gamma)
         error = Y - Y_predict
         
         mis = numpy.linalg.norm(error,0)

@@ -11,9 +11,9 @@ import Dataset
 
 Train = numpy.loadtxt('monks_1_train.txt')
 
-X = Train[:,:-1]
+X = Train[:,1:-1]
 
-Y = Train[:,-1]
+Y = Train[:,0]
 
 
 
@@ -28,6 +28,31 @@ X_N = NorX.fT(X)
 
 Y_N = NorY.fT(Y)
 
+Y_N = Y_N * 2 -1
+
+
+
+Test = numpy.loadtxt('monks_1_test.txt')
+
+X_t = Test[:,1:-1]
+
+Y_t = Test[:,0]
+
+
+
+
+NorX_t = Dataset.Normalization()
+NorX_t.fit(X_t)
+
+NorY_t = Dataset.Normalization()
+NorY_t.fit(Y_t)
+
+X_N_t = NorX.fT(X_t)
+
+Y_N_t = NorY.fT(Y_t)
+
+Y_N_t = Y_N_t * 2 -1
+
 
 #Initializing SVM
 svm = Algorithms.SVM(X_N, Y_N, 'rbf')
@@ -37,7 +62,7 @@ svm = Algorithms.SVM(X_N, Y_N, 'rbf')
     
 
 
-svm.train(C=0.01, gamma=0.01, kernel='rbf')
+svm.train(C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0], kernel='rbf')
 
 
 
@@ -52,7 +77,7 @@ svm.train(C=0.01, gamma=0.01, kernel='rbf')
 
 
 
-svm.evaluate()
+print(svm.evaluate(X_N_t,Y_N_t))
 
-svm.predict()
+#svm.predict()
     

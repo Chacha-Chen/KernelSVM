@@ -21,16 +21,18 @@ _evaulate(output_model,X_test,Y_test)
 """
 
 import numpy as np
+import Kernel
 
+GG = 0.1
 
 # Objective function to optimize 优化目标函数
 # 总感觉有问题 需要处理一下
-def objective_function(alphas, target, kernel, X_train):
+def objective_function(alphas, target, kernel, X_train,gamma):
     """Returns the SVM objective function"""
     result = 0
     for i in range(X_train.shape[0]):      #m个数据
         for j in range(X_train.shape[0]):
-        result -= 0.5 * target[i] * target[j] * kernel(X_train[i], X_train[j]) * alphas[i] * alphas[j]
+            result -= 0.5 * target[i] * target[j] * Kernel.kernel(X_train[i], X_train[j],'rbf',gamma) * alphas[i] * alphas[j]
 
     result += np.sum(alphas)
     return result
@@ -38,11 +40,21 @@ def objective_function(alphas, target, kernel, X_train):
 
 
 # Decision function 分类函数
-def decision_function(alphas, target, kernel, X_train, X_test, b):
+def decision_function(alphas, target, kernel, X_train, X_test, b,gamma):
     """input `x_test` return y."""
+    result = 0
+    for  i in range(X_train.shape[0]):
+        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
+        
+    
+    
+    if result >= b:
+        return 1
+    else:
+        return -1
 
-    result = np.dot((alphas * target) , kernel(X_train, X_test)) - b
-    return result
+                         
+                         
 
 
 class SMO_Model:
@@ -53,7 +65,7 @@ class SMO_Model:
         self.C = C                            # punishment factor
         self.kernel = kernel                  # kernel function: rbf OR linear OR...
         self.alphas = np.zeros(len(self.X))   # lagrange multiplier vector, initialized as zeros
-        self.b = None                         # scalar bias term
+        self.b = 0                         # scalar bias term
         self.errors =np.zeros(len(self.y))    # error cache, initialized as zeros
         #self._obj = []                       # record of objective function value
         self.m = len(self.X)                  # store size of training set
@@ -85,9 +97,9 @@ def take_step(i1, i2, model):
         return 0, model
 
     # Compute kernel & 2nd derivative eta
-    k11 = model.kernel(model.X[i1], model.X[i1], model.gammaVal)
-    k12 = model.kernel(model.X[i1], model.X[i2], model.gammaVal)
-    k22 = model.kernel(model.X[i2], model.X[i2], model.gammaVal)
+    k11 = model.kernel_cal(model.X[i1], model.X[i1], model.gammaVal)
+    k12 = model.kernel_cal(model.X[i1], model.X[i2], model.gammaVal)
+    k22 = model.kernel_cal(model.X[i2], model.X[i2], model.gammaVal)
     eta = 2 * k12 - k11 - k22
 
     # Compute new alpha 2 (a2) if eta is negative
@@ -107,11 +119,11 @@ def take_step(i1, i2, model):
         alphas_adj[i2] = L
 
         # objective function output with a2 = L
-        Lobj = objective_function(alphas_adj, model.y, model.kernel, model.X)
+        Lobj = objective_function(alphas_adj, model.y, model.kernel, model.X,model.gammaVal)
 
         alphas_adj[i2] = H
         # objective function output with a2 = H
-        Hobj = objective_function(alphas_adj, model.y, model.kernel, model.X)
+        Hobj = objective_function(alphas_adj, model.y, model.kernel, model.X,model.gammaVal)
         if Lobj > (Hobj + model.eps):
             a2 = L
         elif Lobj < (Hobj - model.eps):
@@ -159,8 +171,8 @@ def take_step(i1, i2, model):
     # Set non-optimized errors based on equation 12.11 in Platt's book
     non_opt = [n for n in range(model.m) if (n != i1 and n != i2)]
     model.errors[non_opt] = model.errors[non_opt] + \
-                            y1 * (a1 - alph1) * model.kernel(model.X[i1], model.X[non_opt], model.gammaVal) + \
-                            y2 * (a2 - alph2) * model.kernel(model.X[i2], model.X[non_opt], model.gammaVal) + model.b - b_new
+                            y1 * (a1 - alph1) * model.kernel(model.X[i1], model.X[non_opt], GG) + \
+                            y2 * (a2 - alph2) * model.kernel(model.X[i2], model.X[non_opt], GG) + model.b - b_new
 
     # Update model threshold
     model.b = b_new
@@ -214,7 +226,7 @@ def SMO(model):
         if examineAll:
             # loop over all training examples
             for i in range(model.alphas.shape[0]):
-                examine_result, model = SMO_Model.examine_example(i, model)
+                examine_result, model = examine_example(i, model)
                 numChanged += examine_result
                 #if examine_result:
                     #obj_result = SMO_Model.objective_function(model.alphas, model.y, model.kernel, model.X)
@@ -358,7 +370,9 @@ class SVM(Classification):
 
 #acc = _evaulate(output_model,X_test,Y_test)
 def _evaluate(output_model,X_test,Y_test):
-    Y_predict = decision_function(output_model.alphas, output_model.Y_train, output_model.kernel, output_model.X_train, X_test, output_model.b)
+    Y_predict = np.zeros(X_test.shape[0])
+    for i in range(X_test.shape[0]):
+        Y_predict[i] = decision_function(output_model.alphas, output_model.y, output_model.kernel, output_model.X, X_test[i], output_model.b,output_model.gammaVal)
     error = Y_test - Y_predict
         
     mis = np.linalg.norm(error,0)
