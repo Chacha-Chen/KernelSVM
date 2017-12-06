@@ -9,12 +9,14 @@ import numpy
 import Dataset
 
 
+Train = numpy.loadtxt('monks_1_train.txt')
+
+X = Train[:,:-1]
+
+Y = Train[:,-1]
 
 
 
-X = numpy.array([[1,3,3],[1,2,3]])
-
-Y = numpy.array([[1],[2]])
 
 NorX = Dataset.Normalization()
 NorX.fit(X)
