@@ -162,11 +162,24 @@ class SVM():
     def predict(self,X):
         #Return Y
         Y = numpy.dot(X,self.w) - self.b
+        
+        Y[Y >= 0] = 1
+        Y[Y < 0] = -1
+        
         return Y
-        #Y  numpy.array([1,2,3])
+        #Y  numpy.array([1,2,3])  这行注释我也看不懂写的是啥。。。
     
     def evaluate(self,X,Y):
-        return 
+        
+        Y_predict = self.predict(X)
+        
+        error = Y - Y_predict
+        
+        mis = numpy.linalg.norm(error,0)
+        
+        acc = 1 - mis / Y.shape[0]
+        
+        return acc
     
     
 
