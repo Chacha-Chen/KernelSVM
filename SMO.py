@@ -27,8 +27,14 @@ import numpy as np
 # 总感觉有问题 需要处理一下
 def objective_function(alphas, target, kernel, X_train):
     """Returns the SVM objective function"""
+    result = 0
+    for i in range(X_train.shape[0]):      #m个数据
+        for j in range(X_train.shape[0]):
+        result -= 0.5 * target[i] * target[j] * kernel(X_train[i], X_train[j]) * alphas[i] * alphas[j]
 
-    return np.sum(alphas) - 0.5 * np.sum(target * target * kernel(X_train, X_train) * alphas * alphas)
+    result += np.sum(alphas)
+    return result
+
 
 
 # Decision function 分类函数
@@ -42,18 +48,18 @@ def decision_function(alphas, target, kernel, X_train, X_test, b):
 class SMO_Model:
     #initialization
     def __init__(self, x_train, y_train, C, kernel, gammaVal, tol, eps):
-        self.X = x_train  # training data，m*n
-        self.y = y_train  # class label vector，1*m
-        self.C = C  #punishment factor 单值
-        self.kernel = kernel  # kernel function: rbf OR linear OR...
-        self.alphas = np.zeros(len(self.X))  # lagrange multiplier vector, initialized as zeros
-        self.b = None  # scalar bias term
-        self.errors =np.zeros(len(self.y))  # error cache, initialized as zeros
-        #self._obj = []  # record of objective function value
-        self.m = len(self.X)  # store size of training set
-        self.gammaVal = gammaVal  #kernel计算参数
-        self.tol = tol #error tolerance
-        self.eps = eps #alpha tolerance
+        self.X = x_train                      # training data，m*n
+        self.y = y_train                      # class label vector，1*m
+        self.C = C                            # punishment factor
+        self.kernel = kernel                  # kernel function: rbf OR linear OR...
+        self.alphas = np.zeros(len(self.X))   # lagrange multiplier vector, initialized as zeros
+        self.b = None                         # scalar bias term
+        self.errors =np.zeros(len(self.y))    # error cache, initialized as zeros
+        #self._obj = []                       # record of objective function value
+        self.m = len(self.X)                  # store size of training set
+        self.gammaVal = gammaVal              # kernel计算参数
+        self.tol = tol                        # error tolerance
+        self.eps = eps                        # alpha tolerance
 
 def take_step(i1, i2, model):
     # Skip if chosen alphas are the same
@@ -102,6 +108,7 @@ def take_step(i1, i2, model):
 
         # objective function output with a2 = L
         Lobj = objective_function(alphas_adj, model.y, model.kernel, model.X)
+
         alphas_adj[i2] = H
         # objective function output with a2 = H
         Hobj = objective_function(alphas_adj, model.y, model.kernel, model.X)
