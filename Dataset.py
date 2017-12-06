@@ -122,16 +122,18 @@ class Normalization():
         
         up = input_data-self.minVector
         down = (self.maxVector - self.minVector)
-        normalizedData = up / down
+        #normalizedData = up / down
+        
+        normalizedData = numpy.divide(up,down)
         #normalizedData = (input_data-self.minVector[None,:])/(self.maxVector - self.minVector)[None,:]
             
         return normalizedData
             
 if __name__== '__main__':
     
-    X = numpy.array([[2.0,3.0,3.0],[1.5,2.0,8.0]])
+    X = numpy.array([[2.0,3.0,3.0],[1.5,2.0,8.0],[5,7,78]])
 
-    Y = numpy.array([[1.0],[2]])
+    Y = numpy.array([[1.0],[2],[8]])
     
     NorX = Normalization()
     
