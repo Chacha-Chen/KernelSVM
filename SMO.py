@@ -9,6 +9,14 @@ Sequential Minimal Optimization (SMO)
 子类：支持向量机
 
 @author: Chacha
+
+
+objective_function              优化目标函数
+decision_function               决策函数
+SMO_Model                       保存SMO算法需要用到的所有参数信息
+take_step & examine_example     进行SMO运算所需要的工具函数
+SMO(model)                      对model进行SMO算法的优化
+
 """
 
 import numpy as np
@@ -21,12 +29,14 @@ def objective_function(alphas, target, kernel, X_train):
 
     return np.sum(alphas) - 0.5 * np.sum(target * target * kernel(X_train, X_train) * alphas * alphas)
 
+
 # Decision function 分类函数
 def decision_function(alphas, target, kernel, X_train, X_test, b):
     """input `x_test` return y."""
 
     result = np.dot((alphas * target) , kernel(X_train, X_test)) - b
     return result
+
 
 class SMO_Model:
     #initialization

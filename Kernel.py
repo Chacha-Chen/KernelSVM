@@ -15,4 +15,5 @@ def kernel(x1,x2,k_type,gammaVal):
     if k_type == 'rbf':
         
         K = numpy.dot(x1,x2)
+
     return K
