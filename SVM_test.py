@@ -62,9 +62,9 @@ svm = Algorithms.SVM(X_N, Y_N, 'rbf')
     
 
 
-svm.train(C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0], kernel='rbf')
+#svm.train(C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0], kernel='rbf')
 
-
+svm.train(C=[0.01,0.1], gamma=[0.1,1], kernel='rbf')
 
 
 

@@ -32,7 +32,7 @@ def objective_function(alphas, target, kernel, X_train,gamma):
     result = 0
     for i in range(X_train.shape[0]):      #m个数据
         for j in range(X_train.shape[0]):
-            result -= 0.5 * target[i] * target[j] * Kernel.kernel(X_train[i], X_train[j],'rbf',gamma) * alphas[i] * alphas[j]
+            result -= 0.5 * target[i] * target[j] * Kernel.kernel_cal(X_train[i], X_train[j],'rbf',gamma) * alphas[i] * alphas[j]
 
     result += np.sum(alphas)
     return result
@@ -54,7 +54,15 @@ def decision_function(alphas, target, kernel, X_train, X_test, b,gamma):
         return -1
 
                          
-                         
+def _decision_function(alphas, target, kernel, X_train, X_test, b,gamma):
+    """input `x_test` return y."""
+    result = 0
+    for  i in range(X_train.shape[0]):
+        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
+        
+    
+    
+    return result            
 
 
 class SMO_Model:
@@ -71,7 +79,9 @@ class SMO_Model:
         self.m = len(self.X)                  # store size of training set
         self.gammaVal = gammaVal              # kernel计算参数
         self.tol = tol                        # error tolerance
-        self.eps = eps                        # alpha tolerance
+        self.eps = eps
+        for i in range(self.X.shape[0]):
+            self.errors[i] =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X[i], self.b,self.gammaVal) - self.y[i]                 # alpha tolerance
 
 def take_step(i1, i2, model):
     # Skip if chosen alphas are the same
@@ -97,9 +107,9 @@ def take_step(i1, i2, model):
         return 0, model
 
     # Compute kernel & 2nd derivative eta
-    k11 = model.kernel_cal(model.X[i1], model.X[i1], model.gammaVal)
-    k12 = model.kernel_cal(model.X[i1], model.X[i2], model.gammaVal)
-    k22 = model.kernel_cal(model.X[i2], model.X[i2], model.gammaVal)
+    k11 = Kernel.kernel_cal(model.X[i1], model.X[i1], 'rbf',model.gammaVal)
+    k12 = Kernel.kernel_cal(model.X[i1], model.X[i2], 'rbf',model.gammaVal)
+    k22 = Kernel.kernel_cal(model.X[i2], model.X[i2], 'rbf',model.gammaVal)
     eta = 2 * k12 - k11 - k22
 
     # Compute new alpha 2 (a2) if eta is negative
@@ -170,9 +180,10 @@ def take_step(i1, i2, model):
 
     # Set non-optimized errors based on equation 12.11 in Platt's book
     non_opt = [n for n in range(model.m) if (n != i1 and n != i2)]
-    model.errors[non_opt] = model.errors[non_opt] + \
-                            y1 * (a1 - alph1) * model.kernel(model.X[i1], model.X[non_opt], GG) + \
-                            y2 * (a2 - alph2) * model.kernel(model.X[i2], model.X[non_opt], GG) + model.b - b_new
+    for i in range(len(non_opt)):
+        model.errors[non_opt[i]] = model.errors[non_opt[i]] + \
+                            y1 * (a1 - alph1) * Kernel.kernel_cal(model.X[i1], model.X[non_opt[i]], 'rbf',model.gammaVal) + \
+                            y2 * (a2 - alph2) * Kernel.kernel_cal(model.X[i2], model.X[non_opt[i]], 'rbf',model.gammaVal) + model.b - b_new
 
     # Update model threshold
     model.b = b_new
@@ -234,7 +245,7 @@ def SMO(model):
         else:
             # loop over examples where alphas are not already at their limits
             for i in np.where((model.alphas != 0) & (model.alphas != model.C))[0]:
-                examine_result, model = SMO_Model.examine_example(i, model)
+                examine_result, model = examine_example(i, model)
                 numChanged += examine_result
                 #if examine_result:
                     #obj_result = SMO_Model.objective_function(model.alphas, model.y, model.kernel, model.X)

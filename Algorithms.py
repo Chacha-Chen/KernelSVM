@@ -186,6 +186,7 @@ class SVM():
         gamma_best = None
         for CVal in C:
             for gammaVal in gamma:
+                avg_acc = 0
                 for i in range(10):
                     X_test = A[i]
                     Y_test = B[i]
@@ -209,14 +210,15 @@ class SVM():
                     output_model=SMO.SMO(model)
                     
                     acc = SMO._evaluate(output_model,X_test,Y_test)
-
                     
-                    if acc > acc_best:
-                        acc_best = acc
-                        #更新C gamma
-                        C_best = C
-                        gamma_best =gamma
-                        self.gamma = gamma_best
+                    avg_acc = avg_acc +acc/10
+                    
+                if avg_acc > acc_best:
+                    acc_best = avg_acc
+                    #更新C gamma
+                    C_best = CVal
+                    gamma_best =gammaVal
+                    self.gamma = gamma_best
 
 
         #最后一遍train
