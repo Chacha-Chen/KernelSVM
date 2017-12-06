@@ -130,7 +130,7 @@ class SVM():
         self.kernel = kernel  # kernel function: rbf OR linear OR...
         self.alphas = numpy.zeros(len(self.X))  # lagrange multiplier vector, initialized as zeros
         self.b = None  # scalar bias term
-        self.gamma = 1
+        self.gamma_ = 1
 
 
     '''
@@ -247,7 +247,7 @@ class SVM():
         
         Y_predict = numpy.zeros(X_test.shape[0])
         for i in range(X_test.shape[0]):
-            Y_predict[i] = SMO.decision_function(self.alphas, self.Y, self.kernel, self.X, X_test[i], self.b,self.gamma)
+            Y_predict[i] = SMO.decision_function(self.alphas, self.Y, self.kernel, self.X, X_test[i], self.b,self.gamma_)
         error = Y - Y_predict
         
         mis = numpy.linalg.norm(error,0)
