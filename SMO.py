@@ -16,7 +16,8 @@ decision_function               决策函数
 SMO_Model                       保存SMO算法需要用到的所有参数信息
 take_step & examine_example     进行SMO运算所需要的工具函数
 SMO(model)                      对model进行SMO算法的优化
-
+_evaulate(output_model,X_test,Y_test)
+                                计算准确率
 """
 
 import numpy as np
@@ -347,4 +348,15 @@ class SVM(Classification):
         - y1 * (gamma - s * a2) * v1 - y2 * a2 * v2
         return W
 '''
+
+#acc = _evaulate(output_model,X_test,Y_test)
+def _evaluate(output_model,X_test,Y_test):
+    Y_predict = decision_function(output_model.alphas, output_model.Y_train, output_model.kernel, output_model.X_train, X_test, output_model.b)
+    error = Y_test - Y_predict
+        
+    mis = np.linalg.norm(error,0)
+        
+    acc = 1 - mis / Y_test.shape[0]
+        
+    return acc
     
