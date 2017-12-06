@@ -21,12 +21,9 @@ Created on Thu Oct 19 11:10:40 2017
 
 import SMO
 
-import numpy as np
+import numpy
 
 
-
-def _evaulate(w,b,X_test,Y_test):
-    pass
 
 
 
@@ -117,7 +114,7 @@ SVM特有的（如训练算法）在这里重载
 
 class SVM():
     #def __init__(self):
-        """target model"""
+    """target model"""
         
         #self.Data=Dataset.Dataset()
         #self.b = None
@@ -127,11 +124,13 @@ class SVM():
 
     #SVM是一个包含各种参数的类 因为分类函数与alpha x y k b有关
     def __init__(self, x_train, y_train, kernel):
-        self.X = x_train                            # training data，m*n
-        self.y = y_train                            # class label vector，1*m
-        self.kernel = kernel                        # kernel function: rbf OR linear OR...
-        self.alphas = np.zeros(len(self.X))         # lagrange multiplier vector, initialized as zeros
-        self.b = None                               # scalar bias term
+
+        self.X = x_train  # training data，m*n
+        self.y = y_train  # class label vector，1*m
+        self.kernel = kernel  # kernel function: rbf OR linear OR...
+        self.alphas = numpy.zeros(len(self.X))  # lagrange multiplier vector, initialized as zeros
+        self.b = None  # scalar bias term
+
 
 
     '''
@@ -142,18 +141,18 @@ class SVM():
 
    # def train(self, X, Y, C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0], kernel='rbf', tol=1e-3):
         #Cross Validation
-        '''
+    '''
         里面调用SMO
         
-        '''
+    '''
         #X   X_0 X_1.....
         # 生成10份
 
 
-    def train(self,X,Y,C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0],kernal='rbf',tol=1e-3):
+    def train(self,C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0],kernel='rbf',tol=1e-3):
         A = []
         B = []
-        X_num=X.shape[0]
+        X_num=self.X.shape[0]
         train_index=range(X_num)
         test_size=int(X_num*0.1)+1
         for i in range(9):
@@ -161,11 +160,11 @@ class SVM():
             for j in range(test_size):
                 randomIndex=int(numpy.random.uniform(0,len(train_index)))
                 test_index.append(train_index[randomIndex])
-                del train_index[randomIndex]
-            A[i]=X.ix[test_index]
-            B[i]=Y.ix[test_index]
-        A[9]=X.ix[train_index]
-        B[9]=Y.ix[train_index]		
+                #del train_index[randomIndex]
+            A[i]=self.X.ix[test_index]
+            B[i]=self.Y.ix[test_index]
+        A[9]=self.X.ix[train_index]
+        B[9]=self.Y.ix[train_index]		
 				
 
         acc_best = 0
@@ -190,10 +189,12 @@ class SVM():
                     X_train = numpy.concatenate([A[(i+1)%10],A[(i+2)%10],A[(i+3)%10],A[(i+4)%10],A[(i+5)%10],A[(i+6)%10],A[(i+7)%10],A[(i+8)%10],A[(i+9)%10]], axis=0)
                     Y_train = numpy.concatenate([B[(i+1)%10],B[(i+2)%10],B[(i+3)%10],B[(i+4)%10],B[(i+5)%10],B[(i+6)%10],B[(i+7)%10],B[(i+8)%10],B[(i+9)%10]], axis=0)
                     
-                    model= SMO.SMO_Model(X_train, Y_train, CVal, kernel,gammaVal, tol=1e-3, eps=1e-3)
+
+                    model= SMO.SMO_Model(X_train, Y_train, CVal,  self.kernel,gammaVal, tol=1e-3, eps=1e-3)
+
                     output_model=SMO.SMO(model)
                     
-                    acc = _evaulate(output_model)
+                    acc = SMO._evaulate(output_model,X_test,Y_test)
 
                     
                     if acc > acc_best:
@@ -204,7 +205,7 @@ class SVM():
 
 
         #最后一遍train
-        SVM_model = SMO.SMO(SMO.SMO_Model(X_train, Y_train, C_best, kernel, gamma_best, tol=1e-3, eps=1e-3))
+        SVM_model = SMO.SMO(SMO.SMO_Model(X_train, Y_train, C_best, self.kernel, gamma_best, tol=1e-3, eps=1e-3))
         # 参数传递给最后生成的SVM类
         self.X = SVM_model.X
         self.y = SVM_model.y
@@ -356,8 +357,8 @@ class SVM():
         - y1 * (gamma - s * a2) * v1 - y2 * a2 * v2
         return W
  
-    
+
     
 if __name__=="__main__":
     svm = SVM()
-'''       
+'''
