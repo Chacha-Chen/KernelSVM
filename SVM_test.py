@@ -36,7 +36,9 @@ svm = Algorithms.SVM(X_N, Y_N, 'rbf')
 #svm.Data.set_up_for_SVM()
     
 
+
 svm.train(C=0.01, gamma=0.01, kernel='rbf')
+
 
 
 

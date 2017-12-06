@@ -124,11 +124,13 @@ class SVM():
 
     #SVM是一个包含各种参数的类 因为分类函数与alpha x y k b有关
     def __init__(self, x_train, y_train, kernel):
+
         self.X = x_train  # training data，m*n
         self.y = y_train  # class label vector，1*m
         self.kernel = kernel  # kernel function: rbf OR linear OR...
         self.alphas = numpy.zeros(len(self.X))  # lagrange multiplier vector, initialized as zeros
         self.b = None  # scalar bias term
+
 
 
     '''
@@ -187,7 +189,9 @@ class SVM():
                     X_train = numpy.concatenate([A[(i+1)%10],A[(i+2)%10],A[(i+3)%10],A[(i+4)%10],A[(i+5)%10],A[(i+6)%10],A[(i+7)%10],A[(i+8)%10],A[(i+9)%10]], axis=0)
                     Y_train = numpy.concatenate([B[(i+1)%10],B[(i+2)%10],B[(i+3)%10],B[(i+4)%10],B[(i+5)%10],B[(i+6)%10],B[(i+7)%10],B[(i+8)%10],B[(i+9)%10]], axis=0)
                     
+
                     model= SMO.SMO_Model(X_train, Y_train, CVal,  self.kernel,gammaVal, tol=1e-3, eps=1e-3)
+
                     output_model=SMO.SMO(model)
                     
                     acc = SMO._evaulate(output_model,X_test,Y_test)
