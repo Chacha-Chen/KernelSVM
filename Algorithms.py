@@ -20,7 +20,10 @@ Created on Thu Oct 19 11:10:40 2017
 
 
 import SMO
-import numpy
+
+import numpy as np
+
+
 
 def _evaulate(w,b,X_test,Y_test):
     pass
@@ -110,20 +113,43 @@ class Classification(SupervisedLearning):
 从基类继承 可以继承evaluate等相同功能的函数
 SVM特有的（如训练算法）在这里重载
 '''
+
+
 class SVM():
-    def __init__(self):
+    #def __init__(self):
+        """target model"""
         
         #self.Data=Dataset.Dataset()
-        self.b = None
-        self.w = None
+        #self.b = None
+        #self.w = None
         
         #self.target = numpy.zeros((self.Data.number_of_examples))
-    
-    
+
+    #SVM是一个包含各种参数的类 因为分类函数与alpha x y k b有关
+    def __init__(self, x_train, y_train, kernel):
+        self.X = x_train  # training data，m*n
+        self.y = y_train  # class label vector，1*m
+        self.kernel = kernel  # kernel function: rbf OR linear OR...
+        self.alphas = np.zeros(len(self.X))  # lagrange multiplier vector, initialized as zeros
+        self.b = None  # scalar bias term
+
+
     '''
     Using cross_validation
     User can set some of the parameter.
     '''
+
+
+   # def train(self, X, Y, C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0], kernel='rbf', tol=1e-3):
+        #Cross Validation
+        '''
+        里面调用SMO
+        
+        '''
+        #X   X_0 X_1.....
+        # 生成10份
+
+
     def train(self,X,Y,C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0],kernal='rbf',tol=1e-3):
         A = []
         B = []
@@ -141,6 +167,7 @@ class SVM():
         A[9]=X.ix[train_index]
         B[9]=Y.ix[train_index]		
 				
+
         acc_best = 0
         C_best = None
         gamma_best = None
@@ -150,22 +177,48 @@ class SVM():
                     X_test = A[i]
                     Y_test = B[i]
                     
+
+                    # X_train = None
+                    # Y_train = None
+
+                    #model= SMO.SMO_Model(X_train, Y_train, CVal,  kernel,gammaVal, tol=1e-3, eps=1e-3)
+                    #output_model=SMO.SMO(model)
+
+                    #根据output_model的参数信息计算对应decision_function----->推得accuracy
+                    #acc = _evaulate(output_model)
+
                     X_train = numpy.concatenate([A[(i+1)%10],A[(i+2)%10],A[(i+3)%10],A[(i+4)%10],A[(i+5)%10],A[(i+6)%10],A[(i+7)%10],A[(i+8)%10],A[(i+9)%10]], axis=0)
                     Y_train = numpy.concatenate([B[(i+1)%10],B[(i+2)%10],B[(i+3)%10],B[(i+4)%10],B[(i+5)%10],B[(i+6)%10],B[(i+7)%10],B[(i+8)%10],B[(i+9)%10]], axis=0)
                     
-                    (w,b) = SMO.SMO(X_train,Y_train,CVal,gammaVal,kernal,tol=1e-3)
+                    model= SMO.SMO_Model(X_train, Y_train, CVal,  kernel,gammaVal, tol=1e-3, eps=1e-3)
+                    output_model=SMO.SMO(model)
                     
-                    acc = _evaulate(w,b,X_test,Y_test)
+                    acc = _evaulate(output_model)
+
                     
                     if acc > acc_best:
                         acc_best = acc
                         #更新C gamma
                         C_best = C
                         gamma_best =gamma
+
+
+        #最后一遍train
+        SVM_model = SMO.SMO(SMO.SMO_Model(X_train, Y_train, C_best, kernel, gamma_best, tol=1e-3, eps=1e-3))
+        # 参数传递给最后生成的SVM类
+        self.X = SVM_model.X
+        self.y = SVM_model.y
+        self.kernel = SVM_model.kernel
+        self.alphas = SVM_model.alphas
+        self.b = SVM_model.b
+
+                        # C_best = C
+                        # gamma_best =gamma
 						
-        (w,b) = SMO(X_train,Y_train,C_best,gamma_best,kernal,tol=1e-3)
-        self.w = w
-        self.b = b
+        # (w,b) = SMO(X_train,Y_train,C_best,gamma_best,kernal,tol=1e-3)
+        # self.w = w
+        # self.b = b
+
         
         return None
 		
