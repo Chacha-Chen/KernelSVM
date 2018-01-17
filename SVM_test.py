@@ -9,7 +9,7 @@ import numpy
 import Dataset
 
 
-Train = numpy.loadtxt('monks_2_train.txt')
+Train = numpy.loadtxt('dataset//monks_2_train.txt')
 
 X = Train[:,1:-1]
 
@@ -32,7 +32,7 @@ Y_N = Y_N * 2 -1
 
 
 
-Test = numpy.loadtxt('monks_2_test.txt')
+Test = numpy.loadtxt('dataset//monks_2_test.txt')
 
 X_t = Test[:,1:-1]
 

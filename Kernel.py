@@ -35,3 +35,66 @@ def kernel_cal(x1,x2,k_type,gammaVal):
     K = math.exp(numpy.dot(diff,diff) / (-gammaVal)) 
     #print(x1.shape)
     return K
+
+class kernel:
+    
+    def __init__(self,size):
+        self.kernelMat = numpy.zeros(size)
+        
+    def call(self,i,j):
+        return self.kernelMat[i][j]
+
+    
+class RBF(kernel):
+    def __init__(self,size,gamma):
+        kernel.__init__(size)
+        self.gamma = gamma;
+    
+    def calculate(self,X):
+        pass
+
+
+class LINEAR(kernel):
+    def __init__(self,size):
+        kernel.__init__(size)
+    
+    def calculate(self,X):
+        pass
+
+class POLY(kernel):
+    def __init__(self,size,c,d):
+        kernel.__init__(size)
+        self.c = c;
+        self.d = d;
+    
+    def calculate(self,X):
+        pass
+
+class TANH(kernel):
+    def __init__(self,size,c,d):
+        kernel.__init__(size)
+        self.c = c;
+        self.d = d;
+    
+    def calculate(self,X):
+        pass
+
+    
+class TL1(kernel):
+    def __init__(self,size,rho):
+        kernel.__init__(size)
+        self.rho = rho;
+    
+    def calculate(self,X):
+        pass
+    
+
+    
+    
+    
+if __name__ == '__main__':
+    X = numpy.ones((3,3))
+    K = TL1(X.shape,10)
+    K.calculate(X)
+    K.call(1,2)
+    
