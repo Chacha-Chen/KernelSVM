@@ -43,7 +43,11 @@ Module of SMO algorithms
 
 
 ### 项目进展    
-week1 week2  SVM SMO基础学习  
-week3 工具箱架构设计    
-  
+SVM SMO基础学习  
+工具箱架构设计    
+传统SMO算法实现   
+核函数计算    
 ### TODO 
+####  SMO算法优化    
+####  非正定核的SVM
+####  非正定核的LSSVM和PCA
