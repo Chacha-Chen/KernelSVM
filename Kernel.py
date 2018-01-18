@@ -9,7 +9,8 @@ Maybe not used for now.
 #linear kernel 有没有用到gammal参数？
 
 import math
-import numpy
+import numpy as np
+from numpy import linalg as LA
 #import SMO
 '''
 def kernel_cal(x1,x2,k_type,gammaVal):
@@ -32,69 +33,79 @@ def kernel_cal(x1,x2,k_type,gammaVal):
     
     
     diff = x1 - x2
-    K = math.exp(numpy.dot(diff,diff) / (-gammaVal)) 
+    K = math.exp(np.dot(diff,diff) / (-gammaVal)) 
     #print(x1.shape)
     return K
 
+#  New Code For Kernel
 class kernel:
-    
-    def __init__(self,size):
-        self.kernelMat = numpy.zeros(size)
+    #samples is the number of samples
+    def __init__(self,samples):
+        self.samples = samples
+        self.kernelMat = np.zeros((samples,samples))
         
     def call(self,i,j):
         return self.kernelMat[i][j]
 
     
 class RBF(kernel):
-    def __init__(self,size,gamma):
-        kernel.__init__(size)
+    def __init__(self,samples,gamma):
+        kernel.__init__(self,samples)
         self.gamma = gamma;
     
     def calculate(self,X):
-        pass
+        X2 = np.sum(np.multiply(X, X), 1) # sum colums of the matrix
+        K0 = X2 + X2.T - 2 * X * X.T
+        self.kernelMat = np.power(np.exp(-1.0 / self.gamma**2), K0)
 
 
 class LINEAR(kernel):
-    def __init__(self,size):
-        kernel.__init__(size)
+    def __init__(self,samples):
+        kernel.__init__(self,samples)
     
     def calculate(self,X):
-        pass
+        self.kernelMat = np.dot(X,X.T)  
 
 class POLY(kernel):
-    def __init__(self,size,c,d):
-        kernel.__init__(size)
+    #c>=0    d in N+
+    def __init__(self,samples,c,d):
+        kernel.__init__(self,samples)
         self.c = c;
         self.d = d;
     
     def calculate(self,X):
-        pass
+        self.kernelMat = np.power((np.dot(X,X.T) + self.c),self.d)
 
 class TANH(kernel):
-    def __init__(self,size,c,d):
-        kernel.__init__(size)
+    def __init__(self,samples,c,d):
+        kernel.__init__(self,samples)
         self.c = c;
         self.d = d;
     
     def calculate(self,X):
-        pass
+        self.kernelMat = np.tanh(np.dot(X,X.T) + self.c)
 
     
 class TL1(kernel):
-    def __init__(self,size,rho):
-        kernel.__init__(size)
+    def __init__(self,samples,rho):
+        kernel.__init__(self,samples)
         self.rho = rho;
     
     def calculate(self,X):
-        pass
+        # Piecewise Calculation
+        for i in range(self.samples):
+            for j in range(self.samples):
+                self.kernelMat[i][j] = self.rho - LA.norm((X[i]-X[j]),1)
+        
+        self.kernelMat[self.kernelMat<0] = 0
     
 
     
-    
+# Sample Code For Call
     
 if __name__ == '__main__':
-    X = numpy.ones((3,3))
-    K = TL1(X.shape,10)
+    X = np.ones((3,3))
+    K = TL1(3,2)
     K.calculate(X)
-    K.call(1,2)
+    print(K.call(1,2))
     
