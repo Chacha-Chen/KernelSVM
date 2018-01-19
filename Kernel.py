@@ -57,6 +57,11 @@ class RBF(kernel):
         X2 = np.sum(np.multiply(X, X), 1) # sum colums of the matrix
         K0 = X2 + X2.T - 2 * X * X.T
         self.kernelMat = np.power(np.exp(-1.0 / self.gamma**2), K0)
+        
+    def parameter_update(self,new_gamma):
+        old_gamma = self.gamma
+        self.gamma = new_gamma
+        self.kernelMat = np.power(self.kernelMat,(old_gamma / new_gamma)**2)
 
 
 class LINEAR(kernel):
@@ -105,7 +110,9 @@ class TL1(kernel):
     
 if __name__ == '__main__':
     X = np.ones((3,3))
-    K = TL1(3,2)
+    K = RBF(3,1)
     K.calculate(X)
     print(K.call(1,2))
-    
+    K.parameter_update(10)
+    print(K.call(1,2))
+    #For RBF kernel, parameter_update can increase efficiency in Cross-Validation.
