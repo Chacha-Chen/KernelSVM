@@ -14,7 +14,7 @@ import Kernel
 '''
 _LSSVMtrain function without CV
 kernel_dict = {'type':'RBF', 'gamma' : 1}
-(alpha,b)=_LSSVMtrain(X,Y,kernel_dict,regulator)
+(alpha,b,K)=_LSSVMtrain(X,Y,kernel_dict,regulator)
  Y np.array
 '''
 def _LSSVMtrain(X,Y,kernel_dict,regulator):
@@ -51,16 +51,36 @@ def _LSSVMtrain(X,Y,kernel_dict,regulator):
     alpha = b_a[1:]
     
     #return
-    return (alpha,b)
+    return (alpha,b,K)
 
-'''
+def _LSSVMpredict(Xtest,K,alpha,b):
+    K.expand(Xtest)
+    f = b + np.dot(K.testMat,alpha)
+    Y_predict = f
+    Y_predict[Y_predict >= 0] = 1
+    Y_predict[Y_predict < 0] = -1
+    
+    return Y_predict
+
+def _compare(Ytest,Y_predict):
+    #in np.array
+    Error = (Ytest - Y_predict) / 2
+    es = LA.norm(Error,1)
+    acc = 1 - es / Ytest.shape[0]
+    return acc
+
+    
+
+
 # Test Code for _LSSVMtrain
 
 if __name__ == '__main__':
-    X = np.random.rand(5,5)
-    Y = np.array([1,1,-1,-1,1])
+    X = np.random.rand(5,8) - 0.5
+    Y = np.array([1,-1,-1,-1,-1])
     kernel_dict = {'type':'RBF', 'gamma' : 1}
-    (alpha,b)=_LSSVMtrain(X,Y,kernel_dict,1)
+    (alpha,b,K)=_LSSVMtrain(X,Y,kernel_dict,1)
+    Xtest = np.random.rand(3,8) - 0.5
+    Ytest = np.random.rand(3)
+    Y_predict = _LSSVMpredict(Xtest,K,alpha,b)
 
-'''
 
