@@ -8,6 +8,7 @@ LSSVM module for indefinate kernels
 """
 
 import numpy as np
+import numpy
 from numpy import linalg as LA
 import Kernel
 
@@ -69,7 +70,74 @@ def _compare(Ytest,Y_predict):
     acc = 1 - es / Ytest.shape[0]
     return acc
 
-    
+
+# arg List
+def LSSVM_CV(X,Y,kernel_type,GList,arg1,arg2 = None):
+    if kernel_type == 'RBF':
+        A = [0] * 10
+        B = [0] * 10
+        
+        indices = numpy.random.permutation(X.shape[0]) # shape[0]表示第0轴的长度，通常是训练数据的数量  
+        rand_data_x = X[indices]  
+        rand_data_y = Y[indices] # data_y就是标记（label）  
+        
+        l = int(len(indices) / 10) 
+        
+        for i in range(9):
+            A[i] = rand_data_x[i*l:i*l+l]
+            B[i] = rand_data_y[i*l:i*l+l]
+        
+        A[9] = rand_data_x[9*l:]
+        B[9] = rand_data_y[9*l:]
+        
+        best_G = None
+        best_gamma = None
+        acc = 0
+        acc_best = 0
+        for G in GList:
+            for gammaVal in arg1:
+                avg_acc = 0
+                for i in range(10):
+                    X_test = A[i]
+                    Y_test = B[i]
+                    
+
+                    # X_train = None
+                    # Y_train = None
+
+                    #model= SMO.SMO_Model(X_train, Y_train, CVal,  kernel,gammaVal, tol=1e-3, eps=1e-3)
+                    #output_model=SMO.SMO(model)
+
+                    #根据output_model的参数信息计算对应decision_function----->推得accuracy
+                    #acc = _evaulate(output_model)
+
+                    X_train = numpy.concatenate([A[(i+1)%10],A[(i+2)%10],A[(i+3)%10],A[(i+4)%10],A[(i+5)%10],A[(i+6)%10],A[(i+7)%10],A[(i+8)%10],A[(i+9)%10]], axis=0)
+                    Y_train = numpy.concatenate([B[(i+1)%10],B[(i+2)%10],B[(i+3)%10],B[(i+4)%10],B[(i+5)%10],B[(i+6)%10],B[(i+7)%10],B[(i+8)%10],B[(i+9)%10]], axis=0)
+                    
+                    kernel_dict = {'type':'RBF', 'gamma' : gammaVal}
+                    (alpha,b,K)=_LSSVMtrain(X_train,Y_train,kernel_dict,G)
+                    
+                    Y_predict = _LSSVMpredict(X_test,K,alpha,b)
+
+                    
+                    
+                    acc = _compare(Y_test,Y_predict)
+                    
+                    avg_acc = avg_acc +acc/10
+                    
+                if avg_acc > acc_best:
+                    acc_best = avg_acc
+
+                    best_gamma = gammaVal
+                    best_G =G
+
+
+
+        #最后一遍train
+        kernel_dict = {'type':'RBF', 'gamma' : best_gamma}
+        (alpha,b,K)=_LSSVMtrain(X,Y,kernel_dict,best_G)
+        
+        return (alpha,b,K)
 
 
 # Test Code for _LSSVMtrain
@@ -82,5 +150,7 @@ if __name__ == '__main__':
     Xtest = np.random.rand(3,8) - 0.5
     Ytest = np.random.rand(3)
     Y_predict = _LSSVMpredict(Xtest,K,alpha,b)
+    
+    LSSVM_CV(X,Y,'RBF',[0.1,1,10],[0.1,1,10],arg2 = None)
 
 
