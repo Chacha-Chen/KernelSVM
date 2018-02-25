@@ -142,9 +142,11 @@ class TL1(kernel):
         self.X = X
         
     def expand(self,Xtest):
+        self.testMat = np.zeros((Xtest.shape[0],self.samples))
         for i in range(Xtest.shape[0]):
             for j in range(self.samples):
                 self.testMat[i][j] = self.rho - LA.norm((Xtest[i]-self.X[j]),1)
+                
         
         self.testMat[self.testMat<0] = 0
     
@@ -154,9 +156,9 @@ class TL1(kernel):
     
 if __name__ == '__main__':
     X = np.ones((3,3))
-    K = RBF(3,1)
+    K = TL1(3,1)
     K.calculate(X)
-    print(K.call(1,2))
+    #print(K.call(1,2))
     #K.parameter_update(10)
     Xtest = 2 * np.ones((2,3))
     K.expand(Xtest=Xtest)

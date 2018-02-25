@@ -58,8 +58,11 @@ Y_N_t = Y_N_t * 2 -1
 
 
 
-(alpha,b,K) = LSSVM.LSSVM_CV(X_N,Y_N,'RBF',[0.01,0.1,1,10,100],[0.01,0.1,1,10,100],arg2 = None)
-
+#(alpha,b,K) = LSSVM.LSSVM_CV(X_N,Y_N,'RBF',[0.01,0.1,1,10,100],[0.01,0.1,1,10,100],arg2 = None)
+#(alpha,b,K) = LSSVM.LSSVM_CV(X_N,Y_N,'LINEAR',[0.01,0.1,1,10,100])
+#(alpha,b,K) = LSSVM.LSSVM_CV(X_N,Y_N,'POLY',[0.01,0.1,1,10,100],[0.01,0.1,1,10,100],[1,2,3])
+#(alpha,b,K) = LSSVM.LSSVM_CV(X_N,Y_N,'TANH',[0.01,0.1,1,10,100],[0.01,0.1,1,10,100],[0.1,1,2,3,10])
+(alpha,b,K) = LSSVM.LSSVM_CV(X_N,Y_N,'TL1',[0.1,1,10],[0.1,1,10])
 Y_predict = LSSVM._LSSVMpredict(X_N_t,K,alpha,b)
 
 acc = LSSVM._compare(Y_N_t,Y_predict)
