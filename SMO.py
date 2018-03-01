@@ -10,7 +10,6 @@ Sequential Minimal Optimization (SMO)
 
 @author: Chacha
 
-
 objective_function              优化目标函数
 decision_function               决策函数
 SMO_Model                       保存SMO算法需要用到的所有参数信息
@@ -23,18 +22,35 @@ _evaulate(output_model,X_test,Y_test)
 import numpy as np
 import Kernel
 
-GG = 0.1
+# GG = 0.1
 
 # Objective function to optimize 优化目标函数
-# 总感觉有问题 需要处理一下
-def objective_function(alphas, target, kernel, X_train,gamma):
+# 问题 gamma是vector还是数值
+
+def objective_function(alphas, target, kernel, X_train, gamma):
     """Returns the SVM objective function"""
     result = 0
-    for i in range(X_train.shape[0]):      #m个数据
-        for j in range(X_train.shape[0]):
-            result -= 0.5 * target[i] * target[j] * Kernel.kernel_cal(X_train[i], X_train[j],'rbf',gamma) * alphas[i] * alphas[j]
+#    for i in range(X_train.shape[0]):      #m个数据
+#        for j in range(X_train.shape[0]):
+#            result -= 0.5 * target[i] * target[j] * Kernel.kernel_cal(X_train[i], X_train[j],'rbf',gamma) * alphas[i] * alphas[j]
+    
+#    i,j = np.mgrid[target,target]
+#    target[i] * target[j] = i * j
+#    h,k = np.mgrid[alphas,alphas]
+#    for i in range(X_train.shape[0]):
+#        k_result = Kernel.kernel_cal(X_train[i], X_train[j],'rbf',gamma) 
+#
+#    result = -(0.5*h*k* )
+#    
+    m = X_train.shape[0]
+    k = Kernel.RBF(m,gamma)
+    k.calculate(X_train)
+    k.call(i,j) #return kernel(xi,xj)
+    
+    result -= 0.5 * np.sum(np.multiply(target.T * target,k.kernelMat))
 
     result += np.sum(alphas)
+    
     return result
 
 

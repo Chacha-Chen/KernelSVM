@@ -205,7 +205,7 @@ class SVM():
                     Y_train = numpy.concatenate([B[(i+1)%10],B[(i+2)%10],B[(i+3)%10],B[(i+4)%10],B[(i+5)%10],B[(i+6)%10],B[(i+7)%10],B[(i+8)%10],B[(i+9)%10]], axis=0)
                     
                     SMO.GG = gammaVal
-                    model= SMO.SMO_Model(X_train, Y_train, CVal,  self.kernel,gammaVal, tol=1e-3, eps=1e-3)
+                    model= SMO.SMO_Model(X_train, Y_train, CVal,  self.kernel, gammaVal, tol=1e-3, eps=1e-3)
 
                     output_model=SMO.SMO(model)
                     

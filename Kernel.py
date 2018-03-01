@@ -21,21 +21,24 @@ def kernel_cal(x1,x2,k_type,gammaVal):
         diff = x1[i, :] - x2
     K = exp(numpy.dot(diff,diff) / (-gammaVal)) 
     
-	if k_type == 'rbf':
-        
+	if k_type == 'rbf':        
         K = numpy.dot(x1,x2)
 		
-
     return K
 '''
 
-def kernel_cal(x1,x2,k_type,gammaVal):
-    
-    
-    diff = x1 - x2
-    K = math.exp(np.dot(diff,diff) / (-gammaVal)) 
-    #print(x1.shape)
-    return K
+# used in SMO algorithm
+# input:2 vectors 
+# ouput: a value
+# change to input a matrix 
+# output: a kernel matrix 
+
+#def kernel_cal(x1,x2,k_type,gammaVal):
+#    
+#    diff = x1 - x2
+#    K = np.exp(np.dot(diff,diff) * (-gammaVal)) 
+#    #print(x1.shape)
+#    return K
 
 #  New Code For Kernel
 class kernel:
@@ -151,6 +154,8 @@ class TL1(kernel):
 
     
 # Sample Code For Call
+        
+        
     
 if __name__ == '__main__':
     X = np.ones((3,3))
@@ -162,3 +167,21 @@ if __name__ == '__main__':
     K.expand(Xtest=Xtest)
     print(K._call_test(1,2))
     #For RBF kernel, parameter_update can increase efficiency in Cross-Validation.
+    
+    
+    
+X = np.array([[1,1,0],[1,2,3]])
+y = np.array([[0,1,1],[3,4,5]])
+
+gamma =1
+X2 = np.sum(np.multiply(X, X), 1) # sum colums of the matrix
+K0 = np.matrix(X2) + np.matrix(X2).T - 2 * np.dot(X,X.T)
+kernelMat = np.array(np.power(np.exp(-1.0 / gamma**2), K0))
+print(X,X2,K0,kernelMat)
+
+#print(sum(np.multiply(x, x),1))
+
+
+#print(np.dot(diff,diff))
+#print(x.shape[0])
+#print(kernel_cal(x,y,'rbf',1))
