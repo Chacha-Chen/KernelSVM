@@ -173,6 +173,8 @@ if __name__ == '__main__':
 X = np.array([[1,1,0],[1,2,3]])
 y = np.array([[0,1,1],[3,4,5]])
 
+X_test = np.array([0,0,0])
+
 gamma =1
 X2 = np.sum(np.multiply(X, X), 1) # sum colums of the matrix
 K0 = np.matrix(X2) + np.matrix(X2).T - 2 * np.dot(X,X.T)

@@ -51,7 +51,7 @@ Y_N_t = Y_N_t * 2 -1
 
 
 #Initializing SVM
-svm = Algorithms.SVM(X_N, Y_N, 'rbf')
+svm = Algorithms.SVM(X_N, Y_N, 'RBF')
 
 
 #svm.Data.set_up_for_SVM()
@@ -60,7 +60,7 @@ svm = Algorithms.SVM(X_N, Y_N, 'rbf')
 
 #svm.train(C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0], kernel='rbf')
 
-svm.train(C=[0.01,0.1,1,10], gamma=[0.01,0.1,1], kernel='rbf')
+svm.train(C=[0.01,0.1,1,10], gamma=[0.01,0.1,1], kernel='RBF')
 
 
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Oct 19 11:10:40 2017
-SMO算法模块
-Sequential Minimal Optimization (SMO)
+整合后的SMO算法模块
+Integrated Sequential Minimal Optimization (SMO)
 
 基类：监督学习机
 
@@ -18,51 +18,44 @@ SMO(model)                      对model进行SMO算法的优化
 _evaulate(output_model,X_test,Y_test)
                                 计算准确率
 """
+#SMO_Model(X_train, Y_train, CVal, K.kernelMat, tol=1e-3, eps=1e-3)
 
 import numpy as np
 import Kernel
-
-# GG = 0.1
+GG = 0.1
 
 # Objective function to optimize 优化目标函数
 # 问题 gamma是vector还是数值
 
-def objective_function(alphas, target, kernel, X_train, gamma):
+def objective_function(alphas, target, kernel, X_train):
     """Returns the SVM objective function"""
     result = 0
 #    for i in range(X_train.shape[0]):      #m个数据
 #        for j in range(X_train.shape[0]):
-#            result -= 0.5 * target[i] * target[j] * Kernel.kernel_cal(X_train[i], X_train[j],'rbf',gamma) * alphas[i] * alphas[j]
-    
-#    i,j = np.mgrid[target,target]
-#    target[i] * target[j] = i * j
-#    h,k = np.mgrid[alphas,alphas]
-#    for i in range(X_train.shape[0]):
-#        k_result = Kernel.kernel_cal(X_train[i], X_train[j],'rbf',gamma) 
-#
-#    result = -(0.5*h*k* )
-#    
-    m = X_train.shape[0]
-    k = Kernel.RBF(m,gamma)
-    k.calculate(X_train)
-    k.call(i,j) #return kernel(xi,xj)
-    
-    result -= 0.5 * np.sum(np.multiply(target.T * target,k.kernelMat))
-
+#            result -= 0.5 * target[i] * target[j] * Kernel.kernel_cal(X_train[i], X_train[j],'rbf',gamma) * alphas[i] * alphas[j]    
+#    m = X_train.shape[0]
+#    k = Kernel.RBF(m,gamma)
+ #return kernel(xi,xj)   
+    result -= 0.5 * np.sum(np.multiply(np.multiply(target.T * target,kernel.kernelMat), alphas.T * alphas))
     result += np.sum(alphas)
-    
     return result
 
 
-
 # Decision function 分类函数
-def decision_function(alphas, target, kernel, X_train, X_test, b,gamma):
+def decision_function(alphas, target, kernel, X_train, X_test, b):
     """input `x_test` return y."""
     result = 0
-    for  i in range(X_train.shape[0]):
-        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
-        
+#    for  i in range(X_train.shape[0]):
+#        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
+#    X_new=np.vstack((X_train,X_test))
+#    m = X_new.shape[0]
+#    k = Kernel.RBF(m,gamma)
+#    k.calculate(X_new) #return the last row [i,m]
+#    kM = k.kernelMat[m,:]
+    kernel.expand(X_test)    
+    result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
     
+#    result += np.sum(np.multipply(np.multiply(alphas,target),kM))
     
     if result >= b:
         return 1
@@ -72,32 +65,40 @@ def decision_function(alphas, target, kernel, X_train, X_test, b,gamma):
                          
 def _decision_function(alphas, target, kernel, X_train, X_test, b,gamma):
     """input `x_test` return y."""
+#    result = 0
+#    for  i in range(X_train.shape[0]):
+#        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
     result = 0
-    for  i in range(X_train.shape[0]):
-        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
-        
-    
-    
+#    X_new=np.vstack((X_train,X_test))
+#    m = X_new.shape[0]
+#    k = Kernel.RBF(m,gamma)
+#    k.calculate(X_new) 
+#    kM = k.kernelMat[m,:]
+#    
+#    result += np.sum(np.multipply(np.multiply(alphas,target),kM))
+    kernel.expand(X_test)    
+    result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
+            
     return result            
 
 
 class SMO_Model:
     #initialization
-    def __init__(self, x_train, y_train, C, kernel, gammaVal, tol, eps):
+    def __init__(self, x_train, y_train, C, kernel, tol, eps):
         self.X = x_train                      # training data，m*n
         self.y = y_train                      # class label vector，1*m
         self.C = C                            # punishment factor
-        self.kernel = kernel                  # kernel function: rbf OR linear OR...
+        self.kernel = kernel                  # kernel matrix
         self.alphas = np.zeros(len(self.X))   # lagrange multiplier vector, initialized as zeros
-        self.b = 0                         # scalar bias term
+        self.b = 0                            # scalar bias term
         self.errors =np.zeros(len(self.y))    # error cache, initialized as zeros
         #self._obj = []                       # record of objective function value
         self.m = len(self.X)                  # store size of training set
-        self.gammaVal = gammaVal              # kernel计算参数
+#        self.gammaVal = gammaVal              # kernel计算参数
         self.tol = tol                        # error tolerance
         self.eps = eps
         for i in range(self.X.shape[0]):
-            self.errors[i] =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X[i], self.b,self.gammaVal) - self.y[i]                 # alpha tolerance
+            self.errors[i] =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X[i], self.b) - self.y[i]                 # alpha tolerance
 
 def take_step(i1, i2, model):
     # Skip if chosen alphas are the same
@@ -123,9 +124,9 @@ def take_step(i1, i2, model):
         return 0, model
 
     # Compute kernel & 2nd derivative eta
-    k11 = Kernel.kernel_cal(model.X[i1], model.X[i1], 'rbf',model.gammaVal)
-    k12 = Kernel.kernel_cal(model.X[i1], model.X[i2], 'rbf',model.gammaVal)
-    k22 = Kernel.kernel_cal(model.X[i2], model.X[i2], 'rbf',model.gammaVal)
+    k11 = model.kernel.call(i1,i1)
+    k12 = model.kernel.call(i1,i2)
+    k22 = model.kernel.call(i2,i2)
     eta = 2 * k12 - k11 - k22
 
     # Compute new alpha 2 (a2) if eta is negative
@@ -145,11 +146,11 @@ def take_step(i1, i2, model):
         alphas_adj[i2] = L
 
         # objective function output with a2 = L
-        Lobj = objective_function(alphas_adj, model.y, model.kernel, model.X,model.gammaVal)
+        Lobj = objective_function(alphas_adj, model.y, model.kernel, model.X)
 
         alphas_adj[i2] = H
         # objective function output with a2 = H
-        Hobj = objective_function(alphas_adj, model.y, model.kernel, model.X,model.gammaVal)
+        Hobj = objective_function(alphas_adj, model.y, model.kernel, model.X)
         if Lobj > (Hobj + model.eps):
             a2 = L
         elif Lobj < (Hobj - model.eps):
@@ -198,8 +199,10 @@ def take_step(i1, i2, model):
     non_opt = [n for n in range(model.m) if (n != i1 and n != i2)]
     for i in range(len(non_opt)):
         model.errors[non_opt[i]] = model.errors[non_opt[i]] + \
-                            y1 * (a1 - alph1) * Kernel.kernel_cal(model.X[i1], model.X[non_opt[i]], 'rbf',model.gammaVal) + \
-                            y2 * (a2 - alph2) * Kernel.kernel_cal(model.X[i2], model.X[non_opt[i]], 'rbf',model.gammaVal) + model.b - b_new
+                            y1 * (a1 - alph1) * model.kernel.call(i1,non_opt[i]) + \
+                            y2 * (a2 - alph2) * model.kernel.call(i2,non_opt[i]) + model.b - b_new
+#                            y1 * (a1 - alph1) * Kernel.kernel_cal(model.X[i1], model.X[non_opt[i]], 'rbf',model.gammaVal) + \
+#                            y2 * (a2 - alph2) * Kernel.kernel_cal(model.X[i2], model.X[non_opt[i]], 'rbf',model.gammaVal) + model.b - b_new
 
     # Update model threshold
     model.b = b_new
@@ -407,4 +410,10 @@ def _evaluate(output_model,X_test,Y_test):
     acc = 1 - mis / Y_test.shape[0]
         
     return acc
+
+
+# Test Code for SMO
+    
+
+
     
