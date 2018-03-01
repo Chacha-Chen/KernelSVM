@@ -10,6 +10,7 @@ initialized with training set and kernel type
 import SMO
 import numpy
 from numpy import linalg as LA
+import Kernel
 
 
 class SVM():
@@ -23,31 +24,32 @@ class SVM():
 
         self.X = x_train  # training data，m*n
         self.Y = y_train  # class label vector，1*m
-        self.kernel_dict = kernel_dict  # kernel function: rbf OR linear OR...
+        self.kernel_dict = kernel_dict  # kernel_dict = {'type':'RBF', 'gamma' : 1}
         self.alphas = numpy.zeros(len(self.X))  # lagrange multiplier vector, initialized as zeros
         self.b = None  # scalar bias term
         #self.gamma_ = 1
 
 
-    def train(self,C=[0.01,1,10,100],kernel_dict,tol=1e-3):
-        m = Y.shape[0]
+    def train(self,C=[0.01,1,10,100],tol=1e-3):
+        
+        m = self.Y.shape[0]
 
         # calculate Kernel Matrix then pass it to SMO.
-        if kernel_dict['type'] == 'RBF':
-            K = Kernel.RBF(m,kernel_dict['gamma'])
-            K.calculate(X)
-        elif kernel_dict['type'] == 'LINEAR':
+        if self.kernel_dict['type'] == 'RBF':
+            K = Kernel.RBF(m,self.kernel_dict['gamma'])
+            K.calculate(self.X)
+        elif self.kernel_dict['type'] == 'LINEAR':
             K = Kernel.LINEAR(m)
-            K.calculate(X)
-        elif kernel_dict['type'] == 'POLY':
-            K = Kernel.POLY(m,kernel_dict['c'],kernel_dict['d'])
-            K.calculate(X)
-        elif kernel_dict['type'] == 'TANH':
-            K = Kernel.TANH(m,kernel_dict['c'],kernel_dict['d'])
-            K.calculate(X)
-        elif kernel_dict['type'] == 'TL1':
-            K = Kernel.TL1(m,kernel_dict['rho'])
-            K.calculate(X)
+            K.calculate(self.X)
+        elif self.kernel_dict['type'] == 'POLY':
+            K = Kernel.POLY(m,self.self.kernel_dict['c'],self.kernel_dict['d'])
+            K.calculate(self.X)
+        elif self.kernel_dict['type'] == 'TANH':
+            K = Kernel.TANH(m,self.kernel_dict['c'],self.kernel_dict['d'])
+            K.calculate(self.X)
+        elif self.kernel_dict['type'] == 'TL1':
+            K = Kernel.TL1(m,self.kernel_dict['rho'])
+            K.calculate(self.X)
             
             
         A = [0] * 10
@@ -83,6 +85,7 @@ class SVM():
         
         acc_best = 0
         C_best = None
+        avg_acc = 0
 #        gamma_best = None
         for CVal in C:
 #            for gammaVal in gamma:
@@ -105,7 +108,7 @@ class SVM():
                 Y_train = numpy.concatenate([B[(i+1)%10],B[(i+2)%10],B[(i+3)%10],B[(i+4)%10],B[(i+5)%10],B[(i+6)%10],B[(i+7)%10],B[(i+8)%10],B[(i+9)%10]], axis=0)
                     
 #                SMO.GG = gammaVal
-                model= SMO.SMO_Model(X_train, Y_train, CVal, K.kernelMat, tol=1e-3, eps=1e-3)
+                model= SMO.SMO_Model(X_train, Y_train, CVal, K, tol=1e-3, eps=1e-3)
 
                 output_model=SMO.SMO(model)
                     
@@ -123,7 +126,7 @@ class SVM():
 
         #最后一遍train
 #        SMO.GG = gamma_best
-        SVM_model = SMO.SMO(SMO.SMO_Model(X_train, Y_train, C_best, K.kernelMat, tol=1e-3, eps=1e-3))
+        SVM_model = SMO.SMO(SMO.SMO_Model(X_train, Y_train, C_best, K, tol=1e-3, eps=1e-3))
         # 参数传递给最后生成的SVM类
         self.X = SVM_model.X
         self.Y = SVM_model.y
@@ -141,7 +144,7 @@ class SVM():
 
 def _SVMpredict(Xtest,K,alpha,b):
     K.expand(Xtest)
-    f = b + np.dot(K.testMat,alpha)
+    f = b + numpy.dot(K.testMat,alpha)
     Y_predict = f
     Y_predict[Y_predict >= 0] = 1
     Y_predict[Y_predict < 0] = -1

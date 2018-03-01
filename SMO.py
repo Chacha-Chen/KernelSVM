@@ -21,7 +21,7 @@ _evaulate(output_model,X_test,Y_test)
 #SMO_Model(X_train, Y_train, CVal, K.kernelMat, tol=1e-3, eps=1e-3)
 
 import numpy as np
-import Kernel
+#import Kernel
 GG = 0.1
 
 # Objective function to optimize 优化目标函数
@@ -63,7 +63,7 @@ def decision_function(alphas, target, kernel, X_train, X_test, b):
         return -1
 
                          
-def _decision_function(alphas, target, kernel, X_train, X_test, b,gamma):
+def _decision_function(alphas, target, kernel, X_train, X_test, b):
     """input `x_test` return y."""
 #    result = 0
 #    for  i in range(X_train.shape[0]):
@@ -88,7 +88,7 @@ class SMO_Model:
         self.X = x_train                      # training data，m*n
         self.y = y_train                      # class label vector，1*m
         self.C = C                            # punishment factor
-        self.kernel = kernel                  # kernel matrix
+        self.kernel = kernel                  # kernel class
         self.alphas = np.zeros(len(self.X))   # lagrange multiplier vector, initialized as zeros
         self.b = 0                            # scalar bias term
         self.errors =np.zeros(len(self.y))    # error cache, initialized as zeros
