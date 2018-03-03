@@ -54,9 +54,13 @@ def _LSSVMtrain(X,Y,kernel_dict,regulator):
     #return
     return (alpha,b,K)
 
-def _LSSVMpredict(Xtest,K,alpha,b):
+def _LSSVMpredict(Xtest,K,alpha,b,Y):
     K.expand(Xtest)
+    A = np.multiply(alpha,Y)
+
     f = b + np.dot(K.testMat,alpha)
+    #f = b + np.dot(K.testMat,A)
+    #f = b + np.dot(K.testMat,np.multiply(alpha,Y))
     Y_predict = f
     Y_predict[Y_predict >= 0] = 1
     Y_predict[Y_predict < 0] = -1
@@ -109,7 +113,7 @@ def LSSVM_CV(X,Y,kernel_type,GList,arg1=None,arg2 = None):
                     kernel_dict = {'type':'RBF', 'gamma' : gammaVal}
                     (alpha,b,K)=_LSSVMtrain(X_train,Y_train,kernel_dict,G)
                     
-                    Y_predict = _LSSVMpredict(X_test,K,alpha,b)
+                    Y_predict = _LSSVMpredict(X_test,K,alpha,b,Y_train)
 
                     
                     
@@ -166,7 +170,7 @@ def LSSVM_CV(X,Y,kernel_type,GList,arg1=None,arg2 = None):
                 kernel_dict = {'type':'LINEAR'}
                 (alpha,b,K)=_LSSVMtrain(X_train,Y_train,kernel_dict,G)
                     
-                Y_predict = _LSSVMpredict(X_test,K,alpha,b)
+                Y_predict = _LSSVMpredict(X_test,K,alpha,b,Y)
                   
                 acc = _compare(Y_test,Y_predict)
                     
@@ -223,7 +227,7 @@ def LSSVM_CV(X,Y,kernel_type,GList,arg1=None,arg2 = None):
                         kernel_dict = {'type':'POLY', 'c' : c, 'd' : d}
                         (alpha,b,K)=_LSSVMtrain(X_train,Y_train,kernel_dict,G)
                     
-                        Y_predict = _LSSVMpredict(X_test,K,alpha,b)
+                        Y_predict = _LSSVMpredict(X_test,K,alpha,b,Y)
 
                     
                     
@@ -285,7 +289,7 @@ def LSSVM_CV(X,Y,kernel_type,GList,arg1=None,arg2 = None):
                         kernel_dict = {'type':'TANH', 'c' : c, 'd' : d}
                         (alpha,b,K)=_LSSVMtrain(X_train,Y_train,kernel_dict,G)
                     
-                        Y_predict = _LSSVMpredict(X_test,K,alpha,b)
+                        Y_predict = _LSSVMpredict(X_test,K,alpha,b,Y)
 
                     
                     
@@ -344,7 +348,7 @@ def LSSVM_CV(X,Y,kernel_type,GList,arg1=None,arg2 = None):
                     kernel_dict = {'type':'TL1', 'rho' : rho}
                     (alpha,b,K)=_LSSVMtrain(X_train,Y_train,kernel_dict,G)
                     
-                    Y_predict = _LSSVMpredict(X_test,K,alpha,b)
+                    Y_predict = _LSSVMpredict(X_test,K,alpha,b,Y)
 
                     
                     
