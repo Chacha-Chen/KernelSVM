@@ -69,7 +69,7 @@ def _LSSVMpredict(Xtest,K,alpha,b,Y):
 
 def _compare(Ytest,Y_predict):
     #in np.array
-    Error = (Ytest - Y_predict) / 2
+    Error = (Ytest.flatten() - Y_predict.flatten()) / 2
     es = LA.norm(Error,1)
     acc = 1 - es / Ytest.shape[0]
     return acc

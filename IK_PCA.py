@@ -6,10 +6,11 @@ Created on Mon Feb 26 07:58:36 2018
 """
 import Kernel
 import numpy as np
-#from matplotlib.pyplot import subplots, show
-from numpy import linalg as LA
 import LSSVM
 import Dataset
+from matplotlib.pyplot import subplots, show
+from numpy import linalg as LA
+
 '''
 w, v = LA.eig(np.diag((1, 2, 3)))
 
@@ -42,7 +43,7 @@ def pca(X, kernel_dict, pc_count = None):
     
     
     # Construct Kernel Matrix
-    print(K.kernelMat)
+    #print(K.kernelMat)
     
     # Centrelize
     C = K.kernelMat - K.kernelMat.mean(0) - np.matrix(K.kernelMat.mean(1)).T + K.kernelMat.mean()
@@ -51,59 +52,66 @@ def pca(X, kernel_dict, pc_count = None):
     E, V = LA.eigh(C)
     key = np.argsort(E)[::-1][:pc_count]
     E, V = E[key], V[:, key]
-    U = np.dot(C, V)
-    if kernel_dict['type'] == 'RBF':
-        K = Kernel.RBF(m,kernel_dict['gamma'])
-        K.calculate(U)
-    elif kernel_dict['type'] == 'LINEAR':
-        K = Kernel.LINEAR(m)
-        K.calculate(U)
-    elif kernel_dict['type'] == 'POLY':
-        K = Kernel.POLY(m,kernel_dict['c'],kernel_dict['d'])
-        K.calculate(U)
-    elif kernel_dict['type'] == 'TANH':
-        K = Kernel.TANH(m,kernel_dict['c'],kernel_dict['d'])
-        K.calculate(U)
-    elif kernel_dict['type'] == 'TL1':
-        K = Kernel.TL1(m,kernel_dict['rho'])
-        K.calculate(U)
+    #U = np.dot(C, V)
+    U = np.dot(K.kernelMat, V)
+    #E alpha 
     return U, E, V, K
 
-def kPCA_test(Xtest,K,V):
+
+def kPCA_test(Xtest,K,E):
     K.expand(Xtest)
-    X_new = np.dot(K.testMat,V)
+    X_new = np.dot(K.testMat,E)
     return X_new
 
 
-if __name__ == '__main__':  
-    Train = np.loadtxt('dataset///SPECT_train.txt')
+if __name__ == '__main__':
+    Train = np.loadtxt('dataset//monks_1_train.txt')
     X = Train[:,1:-1]
     Y = Train[:,0]
-    NorX = Dataset.Normalization()
-    NorX.fit(X)
-    NorY = Dataset.Normalization()
-    NorY.fit(Y)
-    X_N = NorX.fT(X)
-    Y_N = NorY.fT(Y)
-    Y_N = Y_N * 2 -1
     
-    Test = np.loadtxt('dataset///SPECT_test.txt')
+    Test = np.loadtxt('dataset//monks_1_test.txt')
     X_t = Test[:,1:-1]
     Y_t = Test[:,0]
-    X_N_t = NorX.fT(X_t)  
-    Y_N_t = NorY.fT(Y_t)  
-    Y_N_t = Y_N_t * 2 -1
     
-    kernel_dict = {'type':'RBF','gamma' : 1}
-    (U, E, V, K) = pca(X_N, kernel_dict, 3)
-    
-    (alpha,b,K) = LSSVM.LSSVM_CV(U,Y_N,'LINEAR',[0.001,0.005,0.01,0.05,0.1,0.5,1,4,10,25,100])
-    X_new = kPCA_test(X_N_t,K,V)
-    
-    Y_predict = LSSVM._LSSVMpredict(X_new,K,alpha,b,Y_N)
-    acc = LSSVM._compare(Y_N_t,Y_predict)
+    arg_best = 0
+    acc_best = 0
+    for arg in [10,100,1000]:
 
-    print(acc)
+        kernel_dict = {'type':'RBF','gamma' : arg}
+        (X, E, V, K1) = pca(X, kernel_dict, 10)
+        
+        X_t = kPCA_test(X_t,K1,V)
+        
+        #Norm
+        NorX = Dataset.Normalization()
+        NorX.fit(X)
+        NorY = Dataset.Normalization()
+        NorY.fit(Y)
+        
+        X_N = NorX.fT(X)
+        
+        Y_N = NorY.fT(Y)
+        
+        Y_N = Y_N * 2 -1
+        
+        
+        X_N_t = NorX.fT(X_t)
+        
+        Y_N_t = NorY.fT(Y_t)
+        
+        Y_N_t = Y_N_t * 2 -1
+        
+        #LSSVM
+        (alpha,b,K2) = LSSVM.LSSVM_CV(X_N,Y_N,'LINEAR',[0.001,0.005,0.01,0.05,0.1,0.5,1,4,10,25,100])
+        Y_predict = LSSVM._LSSVMpredict(X_N_t,K2,alpha,b,Y_N)
+    
+        acc = LSSVM._compare(Y_N_t,np.array(Y_predict).T)
+        
+        if acc > acc_best:
+            acc_best = acc
+            arg_best = arg
+
+    print(arg,acc)
     
 '''
 fig, (ax1, ax2) = subplots(1, 2)
