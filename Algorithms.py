@@ -9,6 +9,7 @@ initialized with training set and kernel type
 
 import SMO
 import numpy
+import numpy as np
 from numpy import linalg as LA
 import Kernel
 
@@ -93,19 +94,19 @@ class SVM():
 #                SMO.GG = gammaVal
                         # calculate Kernel Matrix then pass it to SMO.
                 if self.kernel_dict['type'] == 'RBF':
-                    K = Kernel.RBF(m,self.kernel_dict['gamma'])
+                    K = Kernel.RBF(X_train.shape[0],self.kernel_dict['gamma'])
                     K.calculate(X_train)
                 elif self.kernel_dict['type'] == 'LINEAR':
-                    K = Kernel.LINEAR(m)
+                    K = Kernel.LINEAR(X_train.shape[0])
                     K.calculate(X_train)
                 elif self.kernel_dict['type'] == 'POLY':
-                    K = Kernel.POLY(m,self.self.kernel_dict['c'],self.kernel_dict['d'])
+                    K = Kernel.POLY(X_train.shape[0],self.kernel_dict['c'],self.kernel_dict['d'])
                     K.calculate(X_train)
                 elif self.kernel_dict['type'] == 'TANH':
-                    K = Kernel.TANH(m,self.kernel_dict['c'],self.kernel_dict['d'])
+                    K = Kernel.TANH(X_train.shape[0],self.kernel_dict['c'],self.kernel_dict['d'])
                     K.calculate(X_train)
                 elif self.kernel_dict['type'] == 'TL1':
-                    K = Kernel.TL1(m,self.kernel_dict['rho'])
+                    K = Kernel.TL1(X_train.shape[0],self.kernel_dict['rho'])
                     K.calculate(X_train)
            
                 model= SMO.SMO_Model(X_train, Y_train, CVal, K, tol=1e-3, eps=1e-3)
@@ -127,11 +128,29 @@ class SVM():
 
         #最后一遍train
 #        SMO.GG = gamma_best
-        SVM_model = SMO.SMO(SMO.SMO_Model(X_train, Y_train, C_best, K, tol=1e-3, eps=1e-3))
+        
+        if self.kernel_dict['type'] == 'RBF':
+            K = Kernel.RBF(self.X.shape[0],self.kernel_dict['gamma'])
+            K.calculate(self.X)
+        elif self.kernel_dict['type'] == 'LINEAR':
+            K = Kernel.LINEAR(self.X.shape[0])
+            K.calculate(self.X)
+        elif self.kernel_dict['type'] == 'POLY':
+            K = Kernel.POLY(self.X.shape[0],self.self.kernel_dict['c'],self.kernel_dict['d'])
+            K.calculate(self.X)
+        elif self.kernel_dict['type'] == 'TANH':
+            K = Kernel.TANH(self.X.shape[0],self.kernel_dict['c'],self.kernel_dict['d'])
+            K.calculate(self.X)
+        elif self.kernel_dict['type'] == 'TL1':
+            K = Kernel.TL1(self.X.shape[0],self.kernel_dict['rho'])
+            K.calculate(self.X)
+        
+        
+        SVM_model = SMO.SMO(SMO.SMO_Model(self.X, self.Y , C_best, K, tol=1e-3, eps=1e-3))
         # 参数传递给最后生成的SVM类
         self.X = SVM_model.X
         self.Y = SVM_model.y
-        self.kernel_dict = SVM_model.kernel_dict
+        self.kernel_dict = SVM_model.kernel
         self.alphas = SVM_model.alphas
         self.b = SVM_model.b
 
@@ -143,21 +162,35 @@ class SVM():
         # self.b = b        
         return None
 
-def _SVMpredict(Xtest,K,alpha,b):
-    K.expand(Xtest)
-    f = b + numpy.dot(K.testMat,alpha)
-    Y_predict = f
-    Y_predict[Y_predict >= 0] = 1
-    Y_predict[Y_predict < 0] = -1
+    def _SVMpredict(self,Xtest,K,alpha,b,Y):
+        '''
+        K.expand(Xtest)
+        f = b + numpy.dot(K.testMat,alpha)
+        Y_predict = f
+        Y_predict[Y_predict >= 0] = 1
+        Y_predict[Y_predict < 0] = -1
+        
+        return Y_predict
+        '''
+        K.expand(Xtest)
+        A = np.multiply(alpha,Y)
     
-    return Y_predict
-
-def evaluate(Ytest,Y_predict):
-    #in np.array
-    Error = (Ytest - Y_predict) / 2
-    es = LA.norm(Error,1)
-    acc = 1 - es / Ytest.shape[0]
-    return acc
+        #f = b + np.dot(K.testMat,alpha)
+        f = b + np.dot(K.testMat,A)
+        #f = b + np.dot(K.testMat,np.multiply(alpha,Y))
+        Y_predict = f
+        Y_predict[Y_predict >= 0] = 1
+        Y_predict[Y_predict < 0] = -1
+        
+        return Y_predict
+    
+    
+    def evaluate(self,Ytest,Y_predict):
+        #in np.array
+        Error = (Ytest - Y_predict) / 2
+        es = LA.norm(Error,1)
+        acc = 1 - es / Ytest.shape[0]
+        return acc
 
 #    def evaluate(self,X_test,Y,):
 #        

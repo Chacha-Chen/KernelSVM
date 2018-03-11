@@ -44,7 +44,7 @@ def objective_function(alphas, target, kernel, X_train):
 # Decision function 分类函数
 def decision_function(alphas, target, kernel, X_train, X_test, b):
     """input `x_test` return y."""
-    result = 0
+    #result = 0
 #    for  i in range(X_train.shape[0]):
 #        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
 #    X_new=np.vstack((X_train,X_test))
@@ -52,12 +52,14 @@ def decision_function(alphas, target, kernel, X_train, X_test, b):
 #    k = Kernel.RBF(m,gamma)
 #    k.calculate(X_new) #return the last row [i,m]
 #    kM = k.kernelMat[m,:]
-    kernel.expand(np.matrix(X_test))    
-    result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
+    kernel.expand(np.matrix(X_test))
+    A = np.multiply(alphas,target)
+    result = -b + np.dot(kernel.testMat,A)
+    #result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
     
 #    result += np.sum(np.multipply(np.multiply(alphas,target),kM))
     
-    if result >= b:
+    if result >= 0:
         return 1
     else:
         return -1
@@ -68,7 +70,7 @@ def _decision_function(alphas, target, kernel, X_train, X_test, b):
 #    result = 0
 #    for  i in range(X_train.shape[0]):
 #        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
-    result = 0
+
 #    X_new=np.vstack((X_train,X_test))
 #    m = X_new.shape[0]
 #    k = Kernel.RBF(m,gamma)
@@ -76,8 +78,13 @@ def _decision_function(alphas, target, kernel, X_train, X_test, b):
 #    kM = k.kernelMat[m,:]
 #    
 #    result += np.sum(np.multipply(np.multiply(alphas,target),kM))
-    kernel.expand(np.matrix(X_test))    
-    result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
+
+    kernel.expand(np.matrix(X_test))
+    A = np.multiply(alphas,target)
+    result = -b + np.dot(kernel.testMat,A)
+    
+    
+    #result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
             
     return result            
 
