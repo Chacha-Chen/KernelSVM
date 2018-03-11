@@ -82,7 +82,11 @@ class RBF(kernel):
     def expand(self,Xtest):
         X2_train = np.sum(np.multiply(self.X,self.X),1)
         X2_test = np.sum(np.multiply(Xtest,Xtest),1)
-        K0 = np.matrix(X2_train) + np.matrix(X2_test).T -2 * np.dot(Xtest,self.X.T)
+        tmp = np.matrix(X2_train) + np.matrix(X2_test).T
+        if(tmp.shape[0] != X2_test.shape[0]):
+            tmp = tmp.T
+        K0 = tmp -2 * np.dot(Xtest,self.X.T)
+        #K0 = np.matrix(X2_train).T + np.matrix(X2_test) -2 * np.dot(Xtest,self.X.T)
         self.testMat = np.array(np.power(np.exp(-1.0 / self.gamma**2), K0))
 
 
