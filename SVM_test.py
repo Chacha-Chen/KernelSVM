@@ -50,10 +50,6 @@ svm.train(C=[0.01,0.1,1,10])
 
 
 
-
-
-
-
 print(svm.evaluate(X_N_t,Y_N_t))
 print(svm.evaluate(X_N,Y_N))
 #svm.predict()

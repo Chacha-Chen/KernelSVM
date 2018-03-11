@@ -52,7 +52,7 @@ def decision_function(alphas, target, kernel, X_train, X_test, b):
 #    k = Kernel.RBF(m,gamma)
 #    k.calculate(X_new) #return the last row [i,m]
 #    kM = k.kernelMat[m,:]
-    kernel.expand(X_test)    
+    kernel.expand(np.matrix(X_test))    
     result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
     
 #    result += np.sum(np.multipply(np.multiply(alphas,target),kM))
@@ -76,7 +76,7 @@ def _decision_function(alphas, target, kernel, X_train, X_test, b):
 #    kM = k.kernelMat[m,:]
 #    
 #    result += np.sum(np.multipply(np.multiply(alphas,target),kM))
-    kernel.expand(X_test)    
+    kernel.expand(np.matrix(X_test))    
     result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
             
     return result            
@@ -97,8 +97,9 @@ class SMO_Model:
 #        self.gammaVal = gammaVal              # kernel计算参数
         self.tol = tol                        # error tolerance
         self.eps = eps
-        for i in range(self.X.shape[0]):
-            self.errors[i] =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X[i], self.b) - self.y[i]                 # alpha tolerance
+#        for i in range(self.X.shape[0]):
+#            self.errors[i] =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X[i], self.b) - self.y[i]                 # alpha tolerance
+        self.errors =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X, self.b) - self.y                 # alpha tolerance
 
 def take_step(i1, i2, model):
     # Skip if chosen alphas are the same
@@ -399,10 +400,27 @@ class SVM(Classification):
 '''
 
 #acc = _evaulate(output_model,X_test,Y_test)
+#def _predict(Xtest,K,alpha,b):
+#    K.expand(Xtest)
+#    f = b + np.dot(K.testMat,alpha)
+#    Y_predict = f
+#    Y_predict[Y_predict >= 0] = 1
+#    Y_predict[Y_predict < 0] = -1
+#    
+#    return Y_predict
+#
+#def _compare(Ytest,Y_predict):
+#    #in np.array
+#    Error = (Ytest - Y_predict) / 2
+#    es = LA.norm(Error,1)
+#    acc = 1 - es / Ytest.shape[0]
+#    return acc
+
 def _evaluate(output_model,X_test,Y_test):
     Y_predict = np.zeros(X_test.shape[0])
     for i in range(X_test.shape[0]):
-        Y_predict[i] = decision_function(output_model.alphas, output_model.y, output_model.kernel, output_model.X, X_test[i], output_model.b,output_model.gammaVal)
+        Y_predict[i] = decision_function(output_model.alphas, output_model.y, output_model.kernel, output_model.X, X_test[i], output_model.b)
+       
     error = Y_test - Y_predict
         
     mis = np.linalg.norm(error,0)

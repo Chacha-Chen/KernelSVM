@@ -33,24 +33,7 @@ class SVM():
     def train(self,C=[0.01,1,10,100],tol=1e-3):
         
         m = self.Y.shape[0]
-
-        # calculate Kernel Matrix then pass it to SMO.
-        if self.kernel_dict['type'] == 'RBF':
-            K = Kernel.RBF(m,self.kernel_dict['gamma'])
-            K.calculate(self.X)
-        elif self.kernel_dict['type'] == 'LINEAR':
-            K = Kernel.LINEAR(m)
-            K.calculate(self.X)
-        elif self.kernel_dict['type'] == 'POLY':
-            K = Kernel.POLY(m,self.self.kernel_dict['c'],self.kernel_dict['d'])
-            K.calculate(self.X)
-        elif self.kernel_dict['type'] == 'TANH':
-            K = Kernel.TANH(m,self.kernel_dict['c'],self.kernel_dict['d'])
-            K.calculate(self.X)
-        elif self.kernel_dict['type'] == 'TL1':
-            K = Kernel.TL1(m,self.kernel_dict['rho'])
-            K.calculate(self.X)
-            
+         
             
         A = [0] * 10
         B = [0] * 10
@@ -108,9 +91,27 @@ class SVM():
                 Y_train = numpy.concatenate([B[(i+1)%10],B[(i+2)%10],B[(i+3)%10],B[(i+4)%10],B[(i+5)%10],B[(i+6)%10],B[(i+7)%10],B[(i+8)%10],B[(i+9)%10]], axis=0)
                     
 #                SMO.GG = gammaVal
+                        # calculate Kernel Matrix then pass it to SMO.
+                if self.kernel_dict['type'] == 'RBF':
+                    K = Kernel.RBF(m,self.kernel_dict['gamma'])
+                    K.calculate(X_train)
+                elif self.kernel_dict['type'] == 'LINEAR':
+                    K = Kernel.LINEAR(m)
+                    K.calculate(X_train)
+                elif self.kernel_dict['type'] == 'POLY':
+                    K = Kernel.POLY(m,self.self.kernel_dict['c'],self.kernel_dict['d'])
+                    K.calculate(X_train)
+                elif self.kernel_dict['type'] == 'TANH':
+                    K = Kernel.TANH(m,self.kernel_dict['c'],self.kernel_dict['d'])
+                    K.calculate(X_train)
+                elif self.kernel_dict['type'] == 'TL1':
+                    K = Kernel.TL1(m,self.kernel_dict['rho'])
+                    K.calculate(X_train)
+           
                 model= SMO.SMO_Model(X_train, Y_train, CVal, K, tol=1e-3, eps=1e-3)
 
                 output_model=SMO.SMO(model)
+                
                     
                 acc = SMO._evaluate(output_model,X_test,Y_test)
                     
