@@ -46,7 +46,7 @@ for arg in [0.1,1,10,]:
     kernel_dict = {'type':'TL1', 'rho' : arg}
     
     #Initializing SVM
-    svm = Algorithms.SVM(X_N, Y_N, kernel_dict)
+    svm = Algorithms.SVM(X_N, Y_N, kernel_dict,IK=True)
     
     #svm.Data.set_up_for_SVM()
     #svm.train(C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0], kernel='rbf')

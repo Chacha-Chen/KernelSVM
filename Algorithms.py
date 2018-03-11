@@ -14,6 +14,33 @@ from numpy import linalg as LA
 import Kernel
 
 
+#对矩阵g对角化
+def trans_mat(g):
+    m,n = np.linalg.eig(g)
+    r1 = 0
+    r2 = m.shape[0] - 1
+    e1 = np.zeros(m.shape[0])
+    e2 = np.zeros(m.shape[0])
+    v1 = np.zeros_like(g)
+    v2 = np.zeros_like(g)
+    for i in range(m.shape[0]):
+        if m[i] > 0:
+            e1[r1] = m[i]
+            v1[:,r1] = n[:,i]
+            r1 = r1 + 1
+        else:
+            e2[r2] = m[i]  
+            v2[:,r2] = n[:,i]
+            r2 = r2 - 1
+    d1 = np.diag(e1)
+    d2 = np.diag(e2)
+    p1 = np.dot(np.dot(n,d1),n.T)
+    p2 = np.dot(np.dot(n,d2),n.T)
+            
+    return (p1,p2)
+
+
+
 class SVM():
 
     #using kernel_dict to save the kernel type and gamma value??
@@ -21,7 +48,7 @@ class SVM():
     #参数C是一个向量
     
     
-    def __init__(self, x_train, y_train, kernel_dict):
+    def __init__(self, x_train, y_train, kernel_dict, IK=False):
 
         self.X = x_train  # training data，m*n
         self.Y = y_train  # class label vector，1*m
@@ -29,6 +56,7 @@ class SVM():
         self.alphas = numpy.zeros(len(self.X))  # lagrange multiplier vector, initialized as zeros
         self.b = None  # scalar bias term
         #self.gamma_ = 1
+        self.IK = IK
 
 
     def train(self,C=[0.01,1,10,100],tol=1e-3):
@@ -93,6 +121,17 @@ class SVM():
                     
 #                SMO.GG = gammaVal
                         # calculate Kernel Matrix then pass it to SMO.
+                if self.IK:
+                    if self.kernel_dict['type'] == 'TANH':
+                        K = Kernel.TANH(X_train.shape[0],self.kernel_dict['c'],self.kernel_dict['d'])
+                        K.calculate(X_train)
+                    elif self.kernel_dict['type'] == 'TL1':
+                        K = Kernel.TL1(X_train.shape[0],self.kernel_dict['rho'])
+                        K.calculate(X_train)
+                    
+                    p1,p2 = trans_mat(K.kernelMat)
+                    K.kernelMat = np.dot((p1 - p2),K.kernelMat)
+                
                 if self.kernel_dict['type'] == 'RBF':
                     K = Kernel.RBF(X_train.shape[0],self.kernel_dict['gamma'])
                     K.calculate(X_train)
@@ -113,6 +152,9 @@ class SVM():
 
                 output_model=SMO.SMO(model)
                 
+                #IK
+                if self.IK:
+                    output_model.alphas = np.dot((p1 - p2),output_model.alphas)
                     
                 acc = SMO._evaluate(output_model,X_test,Y_test)
                     
@@ -128,6 +170,19 @@ class SVM():
 
         #最后一遍train
 #        SMO.GG = gamma_best
+        
+        #!K
+        if self.IK:
+            if self.kernel_dict['type'] == 'TANH':
+                K = Kernel.TANH(self.X.shape[0],self.kernel_dict['c'],self.kernel_dict['d'])
+                K.calculate(self.X)
+            elif self.kernel_dict['type'] == 'TL1':
+                K = Kernel.TL1(self.X.shape[0],self.kernel_dict['rho'])
+                K.calculate(self.X)
+                    
+            p1,p2 = trans_mat(K.kernelMat)
+            K.kernelMat = np.dot((p1 - p2),K.kernelMat)
+        
         
         if self.kernel_dict['type'] == 'RBF':
             K = Kernel.RBF(self.X.shape[0],self.kernel_dict['gamma'])
@@ -148,6 +203,10 @@ class SVM():
         
         SVM_model = SMO.SMO(SMO.SMO_Model(self.X, self.Y , C_best, K, tol=1e-3, eps=1e-3))
         # 参数传递给最后生成的SVM类
+        
+        if self.IK:
+            SVM_model.alphas = np.dot((p1 - p2),SVM_model.alphas)
+        
         self.X = SVM_model.X
         self.Y = SVM_model.y
         self.kernel_dict = SVM_model.kernel
