@@ -174,22 +174,22 @@ if __name__ == '__main__':
     print(K._call_test(1,2))
     #For RBF kernel, parameter_update can increase efficiency in Cross-Validation.
     
+        
+        
+    X = np.array([[1,1,0],[1,2,3]])
+    y = np.array([[0,1,1],[3,4,5]])
+    
+    X_test = np.array([0,0,0])
+    
+    gamma =1
+    X2 = np.sum(np.multiply(X, X), 1) # sum colums of the matrix
+    K0 = np.matrix(X2) + np.matrix(X2).T - 2 * np.dot(X,X.T)
+    kernelMat = np.array(np.power(np.exp(-1.0 / gamma**2), K0))
+    print(X,X2,K0,kernelMat)
+    
+    #print(sum(np.multiply(x, x),1))
     
     
-X = np.array([[1,1,0],[1,2,3]])
-y = np.array([[0,1,1],[3,4,5]])
-
-X_test = np.array([0,0,0])
-
-gamma =1
-X2 = np.sum(np.multiply(X, X), 1) # sum colums of the matrix
-K0 = np.matrix(X2) + np.matrix(X2).T - 2 * np.dot(X,X.T)
-kernelMat = np.array(np.power(np.exp(-1.0 / gamma**2), K0))
-print(X,X2,K0,kernelMat)
-
-#print(sum(np.multiply(x, x),1))
-
-
-#print(np.dot(diff,diff))
-#print(x.shape[0])
-#print(kernel_cal(x,y,'rbf',1))
+    #print(np.dot(diff,diff))
+    #print(x.shape[0])
+    #print(kernel_cal(x,y,'rbf',1))

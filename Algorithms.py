@@ -191,7 +191,7 @@ class SVM():
             K = Kernel.LINEAR(self.X.shape[0])
             K.calculate(self.X)
         elif self.kernel_dict['type'] == 'POLY':
-            K = Kernel.POLY(self.X.shape[0],self.self.kernel_dict['c'],self.kernel_dict['d'])
+            K = Kernel.POLY(self.X.shape[0],self.kernel_dict['c'],self.kernel_dict['d'])
             K.calculate(self.X)
         elif self.kernel_dict['type'] == 'TANH':
             K = Kernel.TANH(self.X.shape[0],self.kernel_dict['c'],self.kernel_dict['d'])

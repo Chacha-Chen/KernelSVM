@@ -106,7 +106,10 @@ class SMO_Model:
         self.eps = eps
 #        for i in range(self.X.shape[0]):
 #            self.errors[i] =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X[i], self.b) - self.y[i]                 # alpha tolerance
-        self.errors =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X, self.b) - self.y                 # alpha tolerance
+        self.errors =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X, self.b) - self.y
+        self.errors = np.array(self.errors)
+        self.errors = self.errors.reshape(self.m,)
+         # alpha tolerance
 
 def take_step(i1, i2, model):
     # Skip if chosen alphas are the same
@@ -221,6 +224,7 @@ def take_step(i1, i2, model):
 def examine_example(i2, model):
     y2 = model.y[i2]
     alph2 = model.alphas[i2]
+    #model.errors.reshape(model.m,)
     E2 = model.errors[i2]
     r2 = E2 * y2
 
