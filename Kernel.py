@@ -6,41 +6,10 @@ Maybe not used for now.
 """
 
 
-#linear kernel 有没有用到gammal参数？
 
 import math
 import numpy as np
 from numpy import linalg as LA
-#import SMO
-'''
-def kernel_cal(x1,x2,k_type,gammaVal):
-    #x1,x2 numpy.array
-	
-	num = x1.shape[0]
-	for i in range(num):
-        diff = x1[i, :] - x2
-    K = exp(numpy.dot(diff,diff) / (-gammaVal)) 
-    
-	if k_type == 'rbf':        
-        K = numpy.dot(x1,x2)
-		
-    return K
-'''
-
-# used in SMO algorithm
-# input:2 vectors 
-# ouput: a value
-# change to input a matrix 
-# output: a kernel matrix 
-
-#def kernel_cal(x1,x2,k_type,gammaVal):
-#    
-#    diff = x1 - x2
-#    K = np.exp(np.dot(diff,diff) * (-gammaVal)) 
-#    #print(x1.shape)
-#    return K
-
-#  New Code For Kernel
 class kernel:
     #samples is the number of samples
     def __init__(self,samples):
@@ -89,7 +58,6 @@ class RBF(kernel):
         if(tmp.shape[0] != X2_test.shape[0]):
             tmp = tmp.T
         K0 = tmp -2 * np.dot(Xtest,self.X.T)
-        #K0 = np.matrix(X2_train).T + np.matrix(X2_test) -2 * np.dot(Xtest,self.X.T)
         self.testMat = np.array(np.power(np.exp(-1.0 / self.gamma**2), K0))
 
 
@@ -106,7 +74,6 @@ class LINEAR(kernel):
     
 
 class POLY(kernel):
-    #c>=0    d in N+
     def __init__(self,samples,c,d):
         kernel.__init__(self,samples)
         self.c = c;
@@ -167,15 +134,11 @@ if __name__ == '__main__':
     X = np.ones((3,3))
     K = TL1(3,1)
     K.calculate(X)
-    #print(K.call(1,2))
-    #K.parameter_update(10)
     Xtest = 2 * np.ones((2,3))
     K.expand(Xtest=Xtest)
     print(K._call_test(1,2))
     #For RBF kernel, parameter_update can increase efficiency in Cross-Validation.
     
-        
-        
     X = np.array([[1,1,0],[1,2,3]])
     y = np.array([[0,1,1],[3,4,5]])
     
@@ -187,9 +150,3 @@ if __name__ == '__main__':
     kernelMat = np.array(np.power(np.exp(-1.0 / gamma**2), K0))
     print(X,X2,K0,kernelMat)
     
-    #print(sum(np.multiply(x, x),1))
-    
-    
-    #print(np.dot(diff,diff))
-    #print(x.shape[0])
-    #print(kernel_cal(x,y,'rbf',1))

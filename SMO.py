@@ -18,24 +18,15 @@ SMO(model)                      对model进行SMO算法的优化
 _evaulate(output_model,X_test,Y_test)
                                 计算准确率
 """
-#SMO_Model(X_train, Y_train, CVal, K.kernelMat, tol=1e-3, eps=1e-3)
 
 import numpy as np
-#import Kernel
 GG = 0.1
 
-# Objective function to optimize 优化目标函数
-# 问题 gamma是vector还是数值
 
 def objective_function(alphas, target, kernel, X_train):
     """Returns the SVM objective function"""
     result = 0
-#    for i in range(X_train.shape[0]):      #m个数据
-#        for j in range(X_train.shape[0]):
-#            result -= 0.5 * target[i] * target[j] * Kernel.kernel_cal(X_train[i], X_train[j],'rbf',gamma) * alphas[i] * alphas[j]    
-#    m = X_train.shape[0]
-#    k = Kernel.RBF(m,gamma)
- #return kernel(xi,xj)   
+
     result -= 0.5 * np.sum(np.multiply(np.multiply(target.T * target,kernel.kernelMat), alphas.T * alphas))
     result += np.sum(alphas)
     return result
@@ -44,21 +35,9 @@ def objective_function(alphas, target, kernel, X_train):
 # Decision function 分类函数
 def decision_function(alphas, target, kernel, X_train, X_test, b):
     """input `x_test` return y."""
-    #result = 0
-#    for  i in range(X_train.shape[0]):
-#        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
-#    X_new=np.vstack((X_train,X_test))
-#    m = X_new.shape[0]
-#    k = Kernel.RBF(m,gamma)
-#    k.calculate(X_new) #return the last row [i,m]
-#    kM = k.kernelMat[m,:]
     kernel.expand(np.matrix(X_test))
     A = np.multiply(alphas,target)
     result = -b + np.dot(kernel.testMat,A)
-    #result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
-    
-#    result += np.sum(np.multipply(np.multiply(alphas,target),kM))
-    
     if result >= 0:
         return 1
     else:
@@ -67,25 +46,11 @@ def decision_function(alphas, target, kernel, X_train, X_test, b):
                          
 def _decision_function(alphas, target, kernel, X_train, X_test, b):
     """input `x_test` return y."""
-#    result = 0
-#    for  i in range(X_train.shape[0]):
-#        result += ((alphas[i] *target[i]) * Kernel.kernel_cal(X_train[i], X_test,'rbf',gamma))
-
-#    X_new=np.vstack((X_train,X_test))
-#    m = X_new.shape[0]
-#    k = Kernel.RBF(m,gamma)
-#    k.calculate(X_new) 
-#    kM = k.kernelMat[m,:]
-#    
-#    result += np.sum(np.multipply(np.multiply(alphas,target),kM))
 
     kernel.expand(np.matrix(X_test))
     A = np.multiply(alphas,target)
     result = -b + np.dot(kernel.testMat,A)
     
-    
-    #result = b + np.sum(np.dot(np.dot(kernel.testMat,alphas),target))   ##需要测试一下
-            
     return result            
 
 
@@ -99,17 +64,12 @@ class SMO_Model:
         self.alphas = np.zeros(len(self.X))   # lagrange multiplier vector, initialized as zeros
         self.b = 0                            # scalar bias term
         self.errors =np.zeros(len(self.y))    # error cache, initialized as zeros
-        #self._obj = []                       # record of objective function value
         self.m = len(self.X)                  # store size of training set
-#        self.gammaVal = gammaVal              # kernel计算参数
         self.tol = tol                        # error tolerance
         self.eps = eps
-#        for i in range(self.X.shape[0]):
-#            self.errors[i] =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X[i], self.b) - self.y[i]                 # alpha tolerance
         self.errors =_decision_function(self.alphas, self.y, self.kernel, self.X, self.X, self.b) - self.y
         self.errors = np.array(self.errors)
         self.errors = self.errors.reshape(self.m,)
-         # alpha tolerance
 
 def take_step(i1, i2, model):
     # Skip if chosen alphas are the same
@@ -212,8 +172,6 @@ def take_step(i1, i2, model):
         model.errors[non_opt[i]] = model.errors[non_opt[i]] + \
                             y1 * (a1 - alph1) * model.kernel.call(i1,non_opt[i]) + \
                             y2 * (a2 - alph2) * model.kernel.call(i2,non_opt[i]) + model.b - b_new
-#                            y1 * (a1 - alph1) * Kernel.kernel_cal(model.X[i1], model.X[non_opt[i]], 'rbf',model.gammaVal) + \
-#                            y2 * (a2 - alph2) * Kernel.kernel_cal(model.X[i2], model.X[non_opt[i]], 'rbf',model.gammaVal) + model.b - b_new
 
     # Update model threshold
     model.b = b_new
@@ -224,7 +182,6 @@ def take_step(i1, i2, model):
 def examine_example(i2, model):
     y2 = model.y[i2]
     alph2 = model.alphas[i2]
-    #model.errors.reshape(model.m,)
     E2 = model.errors[i2]
     r2 = E2 * y2
 
@@ -270,17 +227,11 @@ def SMO(model):
             for i in range(model.alphas.shape[0]):
                 examine_result, model = examine_example(i, model)
                 numChanged += examine_result
-                #if examine_result:
-                    #obj_result = SMO_Model.objective_function(model.alphas, model.y, model.kernel, model.X)
-                    #model._obj.append(obj_result)
         else:
             # loop over examples where alphas are not already at their limits
             for i in np.where((model.alphas != 0) & (model.alphas != model.C))[0]:
                 examine_result, model = examine_example(i, model)
                 numChanged += examine_result
-                #if examine_result:
-                    #obj_result = SMO_Model.objective_function(model.alphas, model.y, model.kernel, model.X)
-                    #model._obj.append(obj_result)
         if examineAll == 1:
             examineAll = 0
         elif numChanged == 0:
@@ -289,143 +240,6 @@ def SMO(model):
     return model
 
 
-'''
-class SVM(Classification):
-    def __init__(self):
-        Classification.__init__(self)
-        
-        
-        #SVM parameters
-        self.input_size = None
-        
-        self.error_cache = numpy.zeros((self.Data.number_of_examples, 1))
-        self.error_cache = self.error_cache + numpy.nan
-        
-        #self.target = numpy.zeros((self.Data.number_of_examples))
-    def _predict(self,x_predict):
-        pass
-    
-    def train(self,x_train,y_train,C,kernalName,eps):
-        self.C = C
-        self.eps = eps
-        
-        self.kernalName = kernalName
-        self.kernal = Kernel.Kernel()
-        
-        #Lagrange Multiplier
-        self.alpha = numpy.zeros((self.Data.number_of_examples,2))
-        pass
-    
-    def set_parameters(self):
-        pass
-    
-    def _takestep(self,i1,i2):
-        if i1 == i2:
-            return 0
-        
-        y1 = self.Data.dataY[i1]
-        y2 = self.Data.dataY[i2]
-        
-        v1 = self._predict(self.Data.dataX[i1])
-        v2 = self._predict(self.Data.dataX[i2])
-        
-        if self.error_cache[i1]:
-            E1 = self.error_cache[i1]
-        else:
-            E1 = v1 - y1
-            
-        if self.error_cache[i2]:
-            E2 = self.error_cache[i2]
-        else:
-            E2 = v2 - y2
-            
-        s = y1 * y2
-        
-        #Compute L,H
-        if s == -1:
-            L = max(0,self.alpha[i2] - self.alpha[i1])
-            H = min(self.C,self.C + self.alpha[i2] - self.alpha[i1])
-        else:
-            L = max(0,self.alpha[i2] + self.alpha[i1] - self.C)
-            H = min(self.C,self.alpha[i2] + self.alpha[i1])
-            
-        if (L == H):
-            return 0
-        k11 = self.kernal.compute(self.Data.dataX[i1],self.Data.dataX[i1])
-        k12 = self.kernal.compute(self.Data.dataX[i1],self.Data.dataX[i2])
-        k22 = self.kernal.compute(self.Data.dataX[i2],self.Data.dataX[i2])
-        
-        eta = 2 * k12 - k11 - k22
-        if eta < 0:
-            a2 = self.alpha[i2] - y2 * (E1 - E2) / eta
-            if a2 < L:
-                a2 = L
-            elif a2 > H:
-                a2 = H
-        else:
-            Lobj = self._objective_function(i1,i2,self.alpha[i1],self.alpha[i2],L,s,y1,y2,k11,k12,k22,v1,v2)
-            Hobj = self._objective_function(i1,i2,self.alpha[i1],self.alpha[i2],H,s,y1,y2,k11,k12,k22,v1,v2)
-            if Lobj > Hobj + self.eps:
-                a2 = L
-            elif Lobj < Hobj - self.eps:
-                a2 = H
-            else:
-                a2 = self.alpha[i1]
-        if a2 < 1e-8:
-            a2 = 0
-        elif a2 > self.C - 1e-8:
-            a2 = self.C
-        
-        if abs(a2 - self.alpha[i2]) < self.eps * (a2 + self.alpha[i2] + self.eps):
-            return 0
-        
-        a1 = self.alpha[i1] + s * (self.alpha[i2] - a2)
-        
-        #Update threshold to reflect change in Lagrange multipliers
-        
-        #Update weight vector to reflect change in a1 & a2, if linear SVM
-        
-        #Update error cache using new Lagrange multipliers
-        
-        #Store a1 in the alpha array
-        self.alpha[i1] = a1
-        #Store a2 in the alpha array
-        self.alpha[i2] = a2
-        
-        
-        return 1
-            
-    def _objective_function(self,i1,i2,a1_old,a2_old,a2,s,y1,y2,k11,k12,k22,v1,v2):
-        #gamma = a1 + s * a2
-        gamma = a1_old + s * a2_old
-        
-        #我没有理解错v1 v2吧
-        #v1 = self._predict(self.Data.dataX[i1])
-        #v2 = self._predict(self.Data.dataX[i2])
-        
-        v1 = self._predict()
-        W = gamma -s * a2 + a2 - 0.5 * k11 * (gamma - s * a2) * (gamma - s * a2)
-        - 0.5 * k22 * a2 * a2 - s * k12 * (gamma - s * a2) * a2
-        - y1 * (gamma - s * a2) * v1 - y2 * a2 * v2
-        return W
-'''
-
-#acc = _evaulate(output_model,X_test,Y_test)
-#def _predict(Xtest,K,alpha,b):
-#    K.expand(Xtest)
-#    f = b + np.dot(K.testMat,alpha)
-#    Y_predict = f
-#    Y_predict[Y_predict >= 0] = 1
-#    Y_predict[Y_predict < 0] = -1
-#    
-#    return Y_predict
-#
-#def _compare(Ytest,Y_predict):
-#    #in np.array
-#    Error = (Ytest - Y_predict) / 2
-#    es = LA.norm(Error,1)
-#    acc = 1 - es / Ytest.shape[0]
-#    return acc
 
 def _evaluate(output_model,X_test,Y_test):
     Y_predict = np.zeros(X_test.shape[0])
@@ -441,7 +255,6 @@ def _evaluate(output_model,X_test,Y_test):
     return acc
 
 
-# Test Code for SMO
     
 
 

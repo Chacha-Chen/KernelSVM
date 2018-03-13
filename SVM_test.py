@@ -44,17 +44,11 @@ best_acc = 0
 for arg in [0.1,1,2,5]:
     for arg2 in [1,2,3]:
         kernel_dict = {'type':'POLY', 'c' : arg, 'd':arg2}
-        #kernel_dict = {'type':'TL1', 'rho' : arg}
-        #Initializing SVM
+
         svm = Algorithms.SVM(X_N, Y_N, kernel_dict)
-        
-        #svm.Data.set_up_for_SVM()
-        #svm.train(C=[0.01,1,10,100], gamma=[0.1,0.2,0.5,1.0], kernel='rbf')
-        
+    
         svm.train(C=[0.1,1,10])
         
-        
-        #_SVMpredict(Xtest,K,alpha,b,Y)
         Y_predict = svm._SVMpredict(X_N_t, svm.kernel_dict, svm.alphas, svm.b, Y_N)
         acc = svm.evaluate(Y_predict,Y_N_t)
         print(acc)
@@ -63,5 +57,5 @@ for arg in [0.1,1,2,5]:
             best_arg = arg
 
 print("bestacc",best_acc)
-#svm.predict()
+
     
