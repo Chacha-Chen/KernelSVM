@@ -8,9 +8,7 @@ import Algorithms
 import numpy
 import Dataset
 
-
 Train = numpy.loadtxt('dataset//monks_1_train.txt')
-
 
 X = Train[:,1:-1]
 Y = Train[:,0]
