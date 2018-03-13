@@ -61,7 +61,7 @@ class SVM():
 
     def train(self,C=[0.01,1,10,100],tol=1e-3):
         
-        m = self.Y.shape[0]
+        #m = self.Y.shape[0]
          
             
         A = [0] * 10

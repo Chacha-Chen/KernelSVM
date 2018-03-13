@@ -9,7 +9,7 @@ import numpy
 import Dataset
 
 
-Train = numpy.loadtxt('dataset//monks_3_train.txt')
+Train = numpy.loadtxt('dataset//monks_1_train.txt')
 
 
 X = Train[:,1:-1]
@@ -28,7 +28,7 @@ Y_N = Y_N * 2 -1
 
 
 
-Test = numpy.loadtxt('dataset//monks_3_test.txt')
+Test = numpy.loadtxt('dataset//monks_1_test.txt')
 X_t = Test[:,1:-1]
 Y_t = Test[:,0]
 
@@ -41,7 +41,7 @@ Y_N_t = Y_N_t * 2 -1
 
 best_arg = 0
 best_acc = 0
-for arg in [0.1,1,10,]:
+for arg in [0.1,1,2,5]:
     for arg2 in [1,2,3]:
         kernel_dict = {'type':'POLY', 'c' : arg, 'd':arg2}
         #kernel_dict = {'type':'TL1', 'rho' : arg}
