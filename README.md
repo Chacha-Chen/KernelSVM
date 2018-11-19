@@ -3,7 +3,7 @@
 A python toolbox for support vector machine on both indefinite kernel learning and traditional methods(semi-definite)
 -------------
 
-@[Chacha Chen](https://github.com/chacha-chen), @[Leyu Yao](https://github.com/dynasting), @[Zhebing Huang](https://github.com/793159320)
+@[Leyu Yao](https://github.com/dynasting), @[Zhebing Huang](https://github.com/793159320), @[Chacha Chen](https://github.com/chacha-chen)
 
 ### Usage
 
