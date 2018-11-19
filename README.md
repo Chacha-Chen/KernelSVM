@@ -41,7 +41,7 @@ SVM SMO基础学习
 核函数计算  
 ####  SMO算法优化  
 ####  非正定核的SVM
-####  非正定核的LSSVM和PCA--!>
+####  非正定核的LSSVM和PCA-->
 
 
 ### Reference
