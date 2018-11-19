@@ -38,14 +38,14 @@ Please refer to test.py for examples.
 SVM SMO基础学习  
 工具箱架构设计    
 传统SMO算法实现   
-核函数计算  --!>
-
-####  SMO算法优化    
+核函数计算  
+####  SMO算法优化  
 ####  非正定核的SVM
-####  非正定核的LSSVM和PCA
+####  非正定核的LSSVM和PCA--!>
 
 
 ### Reference
+
 [X. Huang, A. Maier, J. Hornegger, J.A.K. Suykens: Indefinite Kernels in Least Squares Support Vector Machine and Principal Component Analysis, Applied and Computational Harmonic Analysis, 43(1): 162-172, 2017](https://www5.informatik.uni-erlangen.de/Forschung/Publikationen/2016/Huang16-IKI.pdf)\\
 
 [Schleif, Frank-Michael, and Peter Tino. "Indefinite proximity learning: A review." Neural computation 27.10 (2015): 2039-2096.](https://www.techfak.uni-bielefeld.de/~fschleif/ijcnn_2015/NECO-02-015-2298-Source.pdf)\\
