@@ -1,6 +1,5 @@
 # KernelSVM
 
----
 A python toolbox for support vector machine on both indefinite kernel learning and traditional methods(semi-definite)
 -------------
 
@@ -24,25 +23,15 @@ Please refer to test.py for examples.
 
 
 ### Projects Framework  
-- Algorithms:
+- Algorithms: Core module for learning  
 
-Core module for learning  
+- Dataset: Module for dataset processing  
 
-- Dataset:
+- Kernel: Module for a variety of kernels  
 
-Module for dataset processing  
+- Model: Module for a variety of models, e.g.  linear model  
 
-- Kernel:  
-
-Module for a variety of kernels  
-
-- Model:  
-
-Module for a variety of models, e.g.  linear model  
-
-- SMO:
-
-Module of SMO algorithms
+- SMO: Module of SMO algorithms
 
 
 <!--### 项目进展    
@@ -57,11 +46,11 @@ SVM SMO基础学习
 
 
 ### Reference
-[X. Huang, A. Maier, J. Hornegger, J.A.K. Suykens: Indefinite Kernels in Least Squares Support Vector Machine and Principal Component Analysis, Applied and Computational Harmonic Analysis, 43(1): 162-172, 2017](https://www5.informatik.uni-erlangen.de/Forschung/Publikationen/2016/Huang16-IKI.pdf)
+[X. Huang, A. Maier, J. Hornegger, J.A.K. Suykens: Indefinite Kernels in Least Squares Support Vector Machine and Principal Component Analysis, Applied and Computational Harmonic Analysis, 43(1): 162-172, 2017](https://www5.informatik.uni-erlangen.de/Forschung/Publikationen/2016/Huang16-IKI.pdf)\\
 
-[Schleif, Frank-Michael, and Peter Tino. "Indefinite proximity learning: A review." Neural computation 27.10 (2015): 2039-2096.](https://www.techfak.uni-bielefeld.de/~fschleif/ijcnn_2015/NECO-02-015-2298-Source.pdf)
+[Schleif, Frank-Michael, and Peter Tino. "Indefinite proximity learning: A review." Neural computation 27.10 (2015): 2039-2096.](https://www.techfak.uni-bielefeld.de/~fschleif/ijcnn_2015/NECO-02-015-2298-Source.pdf)\\
 
 [Boser, Bernhard E., Isabelle M. Guyon, and Vladimir N. Vapnik. "A training algorithm for optimal margin classifiers." Proceedings of the fifth annual workshop on Computational learning theory. ACM, 1992.
-](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.21.3818&rep=rep1&type=pdf)
+](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.21.3818&rep=rep1&type=pdf)\\
  
 [Platt, John. "Sequential minimal optimization: A fast algorithm for training support vector machines." (1998)](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr-98-14.pdf)
