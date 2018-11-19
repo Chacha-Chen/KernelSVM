@@ -51,3 +51,10 @@ SVM SMO基础学习
 ####  SMO算法优化    
 ####  非正定核的SVM
 ####  非正定核的LSSVM和PCA
+
+
+### Reference
+[X. Huang, A. Maier, J. Hornegger, J.A.K. Suykens: Indefinite Kernels in Least Squares Support Vector Machine and Principal Component Analysis, Applied and Computational Harmonic Analysis, 43(1): 162-172, 2017](https://www5.informatik.uni-erlangen.de/Forschung/Publikationen/2016/Huang16-IKI.pdf)
+Indefinite Proximity Learning: A Review
+SVM paper
+SMO paper
