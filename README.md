@@ -7,18 +7,32 @@ A python toolbox for support vector machine on both indefinite kernel learning a
 
 ### Usage
 
+First define a kernel dictionary must be defined before calling algorithms. A kernel type should be specified with sufficient kernel parameters.
 ```
-Python test.py
+kernel_dict = {'type':'[kernel_type]', 'c' : arg1, 'd':arg2}
 ```
-Please refer to test.py for examples.
+\[kernel_type\] options:
+- RBF: gaussian kernel
+- LINEAR: linear kernel
+- POLY: polynomial kernel
+- TAHN: tahn kernel
+- TL1: TL1 kernel
 
+SVM is implemented in 'Algorithm.py', call SVM simple by
+```
+import Algorithms
+
+svm = Algorithms.SVM(X_train, Y_train, kernel_dict)
+svm.train(C=[0.1,1,10])
+```
+Similarly, KVM, LSSVM, and kPCA could be called via corresponding module.
 
 ### Environment and Dependencies:
 ![](https://img.shields.io/badge/python-3.6-brightgreen.svg)
 
 [![](https://img.shields.io/badge/anaconda3-4.4.0-brightgreen.svg)](https://www.anaconda.com/download/)
 
-![](https://img.shields.io/badge/platform-Windows10-blue.svg)
+<!--![](https://img.shields.io/badge/platform-Windows10-blue.svg)-->
 
 
 
@@ -46,11 +60,13 @@ SVM SMO基础学习
 
 ### Reference
 
-[X. Huang, A. Maier, J. Hornegger, J.A.K. Suykens: Indefinite Kernels in Least Squares Support Vector Machine and Principal Component Analysis, Applied and Computational Harmonic Analysis, 43(1): 162-172, 2017](https://www5.informatik.uni-erlangen.de/Forschung/Publikationen/2016/Huang16-IKI.pdf)\\
+[X. Huang, A. Maier, J. Hornegger, J.A.K. Suykens: Indefinite Kernels in Least Squares Support Vector Machine and Principal Component Analysis, Applied and Computational Harmonic Analysis, 43(1): 162-172, 2017](https://www5.informatik.uni-erlangen.de/Forschung/Publikationen/2016/Huang16-IKI.pdf)
 
-[Schleif, Frank-Michael, and Peter Tino. "Indefinite proximity learning: A review." Neural computation 27.10 (2015): 2039-2096.](https://www.techfak.uni-bielefeld.de/~fschleif/ijcnn_2015/NECO-02-015-2298-Source.pdf)\\
+[Schleif, Frank-Michael, and Peter Tino. "Indefinite proximity learning: A review." Neural computation 27.10 (2015): 2039-2096.](https://www.techfak.uni-bielefeld.de/~fschleif/ijcnn_2015/NECO-02-015-2298-Source.pdf)
 
 [Boser, Bernhard E., Isabelle M. Guyon, and Vladimir N. Vapnik. "A training algorithm for optimal margin classifiers." Proceedings of the fifth annual workshop on Computational learning theory. ACM, 1992.
-](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.21.3818&rep=rep1&type=pdf)\\
+](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.21.3818&rep=rep1&type=pdf)
  
 [Platt, John. "Sequential minimal optimization: A fast algorithm for training support vector machines." (1998)](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr-98-14.pdf)
+
+[Luss, R., & d'Aspremont, A. (2008). Support vector machine classification with indefinite kernels. In Advances in Neural Information Processing Systems (pp. 953-960).](http://papers.nips.cc/paper/3339-support-vector-machine-classification-with-indefinite-kernels.pdf)
